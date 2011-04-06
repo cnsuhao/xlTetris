@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Languages>
+    <Language Name="zh-CN" DisplayName="中文(简体)">
+        <String ID="SampleString">
+            <![CDATA[简体字符串]]>
+        </String>
+        <String ID="ID_App_Init_Fail">
+            <![CDATA[程序初始化失败。]]>
+        </String>
+        <String ID="ID_MainWindow_Caption">
+            <![CDATA[俄罗斯方块]]>
+        </String>
+        <String ID="ID_MainWindow_Lable_Score">
+            <![CDATA[当前得分]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Start">
+            <![CDATA[开始]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Stop">
+            <![CDATA[停止]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Pause">
+            <![CDATA[暂停]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Continue">
+            <![CDATA[继续]]>
+        </String>
+        <String ID="ID_MainWnd_Link_WebSite">
+            <![CDATA[<a href="http://www.streamlet.org/">溪流软件工作室</a>出品]]>
+        </String>
+    </Language>
+    <Language Name="zh-TW" DisplayName="中文(繁體)">
+        <String ID="SampleString">
+            <![CDATA[繁體字符串]]>
+        </String>
+        <String ID="ID_App_Init_Fail">
+            <![CDATA[程式初始化失敗。]]>
+        </String>
+        <String ID="ID_MainWindow_Caption">
+            <![CDATA[俄儸斯方塊]]>
+        </String>
+        <String ID="ID_MainWindow_Lable_Score">
+            <![CDATA[當前得分]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Start">
+            <![CDATA[開始]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Stop">
+            <![CDATA[停止]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Pause">
+            <![CDATA[暫停]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Continue">
+            <![CDATA[繼續]]>
+        </String>
+        <String ID="ID_MainWnd_Link_WebSite">
+            <![CDATA[<a href="http://www.streamlet.org/">溪流軟件工作室</a>出品]]>
+        </String>
+    </Language>
+    <Language Name="en" DisplayName="English">
+        <String ID="SampleString">
+            <![CDATA[English String]]>
+        </String>
+        <String ID="ID_App_Init_Fail">
+            <![CDATA[Failed to initialize application.]]>
+        </String>
+        <String ID="ID_MainWindow_Caption">
+            <![CDATA[Tetris]]>
+        </String>
+        <String ID="ID_MainWindow_Lable_Score">
+            <![CDATA[Score]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Start">
+            <![CDATA[Start]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Stop">
+            <![CDATA[Stop]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Pause">
+            <![CDATA[Pause]]>
+        </String>
+        <String ID="ID_MainWindow_Button_Continue">
+            <![CDATA[Continue]]>
+        </String>
+        <String ID="ID_MainWnd_Link_WebSite">
+            <![CDATA[<a href="http://www.streamlet.org/">Streamlet Studio</a>]]>
+        </String>
+    </Language>
+</Languages>
