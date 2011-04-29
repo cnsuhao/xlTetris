@@ -838,7 +838,7 @@ bool XmlParserEx::MatchNodeValue(XmlString &strNodeValue)
                 break;
             }
 
-            m_nPos += nCommentLen;
+            m_nPos += (int)nCommentLen;
         }
         else if (m_strXml[m_nPos] == L'&')
         {
