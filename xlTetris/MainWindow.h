@@ -61,26 +61,26 @@ private:
 
 private:
     // Message Map Handlers
-    // LRESULT OnMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnCreate         (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnDestroy        (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnPaint          (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnActivate       (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnSize           (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnKeyDown        (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT OnLButtonDown    (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    // LRESULT OnMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnCreate         (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnDestroy        (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnPaint          (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnActivate       (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnSize           (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnKeyDown        (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+    LRESULT OnLButtonDown    (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 
 private:
     // Command Message Handlers
-    // LRESULT OnCommandMessage(HWND hWnd, WORD wID, WORD wCode, HWND hControl);
-    LRESULT OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl);
-    LRESULT OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl);
+    // LRESULT OnCommandMessage(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
+    LRESULT OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
+    LRESULT OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
 
 private:
     // Notify Message Handlers
-    // LRESULT OnNotifyMessage(HWND hWnd, UINT uID, UINT uCode, HWND hControl);
-    LRESULT OnLinkWebsiteClick(HWND hWnd, UINT uID, UINT uCode, HWND hControl);
+    // LRESULT OnNotifyMessage(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hControl, BOOL &bHandled);
+    LRESULT OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hControl, BOOL &bHandled);
 
 private:
     void Start();

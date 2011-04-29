@@ -106,7 +106,7 @@ void MainWindow::SetTexts()
     m_linkWebSite.SetWindowText(strText.GetAddress());
 }
 
-LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TETRIS));
     SetIcon(hIcon);
@@ -118,13 +118,13 @@ LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     PostQuitMessage(0);
     return FALSE;
 }
 
-LRESULT MainWindow::OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     HDC hDC = (HDC)wParam;
 
@@ -142,7 +142,7 @@ LRESULT MainWindow::OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
     return TRUE;
 }
 
-LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     RECT rect;
     GetClientRect(&rect);
@@ -164,7 +164,7 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-LRESULT MainWindow::OnActivate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnActivate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     if (wParam == WA_INACTIVE && m_bStarted && !m_bPaused)
     {
@@ -174,7 +174,7 @@ LRESULT MainWindow::OnActivate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     return FALSE;
 }
 
-LRESULT MainWindow::OnSize(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnSize(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     if (m_bStarted && !m_bPaused)
     {
@@ -184,7 +184,7 @@ LRESULT MainWindow::OnSize(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-LRESULT MainWindow::OnKeyDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnKeyDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     if (m_bStarted && wParam == 'P')
     {
@@ -230,13 +230,13 @@ LRESULT MainWindow::OnKeyDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
     return FALSE;
 }
 
-LRESULT MainWindow::OnLButtonDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnLButtonDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
     SetFocus();
     return FALSE;
 }
 
-LRESULT MainWindow::OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl)
+LRESULT MainWindow::OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
 {
     if (m_bStarted)
     {
@@ -250,7 +250,7 @@ LRESULT MainWindow::OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl
     return FALSE;
 }
 
-LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl)
+LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
 {
     if (m_bPaused)
     {
@@ -264,7 +264,7 @@ LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl
     return FALSE;
 }
 
-LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT uID, UINT uCode, HWND hControl)
+LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hContro, BOOL &bHandledl)
 {
     ShellExecute(m_hWnd, _T("open"), _T("http://www.streamlet.org/"), NULL, NULL, SW_SHOW);
     return FALSE;
