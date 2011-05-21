@@ -123,44 +123,44 @@ bool Language::InnerInit(const xl::String &strXml)
         return false;
     }
 
-    for (auto &it = pLanguagesNode->SubNodes().Begin(); it != pLanguagesNode->SubNodes().End(); ++it)
+    for (auto &itLanguage = pLanguagesNode->SubNodes().Begin(); itLanguage != pLanguagesNode->SubNodes().End(); ++itLanguage)
     {
-        XmlNodePtr pNode = *it;
+        XmlNodePtr pNodeLanguage = *itLanguage;
 
-        if (pNode->GetTagName() != _T("Language"))
+        if (pNodeLanguage->GetTagName() != _T("Language"))
         {
             continue;
         }
 
-        xl::String strLangName = pNode->Properties()[_T("DisplayName")];
-        xl::String strLangCode = pNode->Properties()[_T("Name")];
+        xl::String strLangName = pNodeLanguage->Properties()[_T("DisplayName")];
+        xl::String strLangCode = pNodeLanguage->Properties()[_T("Name")];
 
         LanguageData &language = m_languages[strLangCode];
         language.stLanguageInfo.strDisplayName = strLangName;
         language.stLanguageInfo.strLanguageCode = strLangCode;
 
-        for (auto &it = pNode->SubNodes().Begin(); it != pNode->SubNodes().End(); ++it)
+        for (auto &itString = pNodeLanguage->SubNodes().Begin(); itString != pNodeLanguage->SubNodes().End(); ++itString)
         {
-            XmlNodePtr pNode = *it;
+            XmlNodePtr pNodeString = *itString;
 
-            if (pNode->GetTagName() != _T("String"))
+            if (pNodeString->GetTagName() != _T("String"))
             {
                 continue;
             }
 
-            if (pNode->SubNodes().Empty())
+            if (pNodeString->SubNodes().Empty())
             {
                 continue;
             }
 
-            XmlNodePtr pSubNode = *pNode->SubNodes().Begin();
+            XmlNodePtr pSubNode = *pNodeString->SubNodes().Begin();
 
             if (pSubNode->GetType() != XmlNode::XML_CDATA && pSubNode->GetType() != XmlNode::XML_VALUE)
             {
                 continue;
             }
 
-            XmlString strID = pNode->Properties()[_T("ID")];
+            XmlString strID = pNodeString->Properties()[_T("ID")];
 
             if (strID.Empty())
             {
@@ -207,14 +207,14 @@ bool Language::SetCurrentLanguage(LANGID wLangCode)
 {
     TCHAR szLangName[64] = {};
 
-    if (!GetLocaleInfo(wLangCode, LOCALE_SISO639LANGNAME, szLangName, sizeof(szLangName)))
+    if (!GetLocaleInfo(wLangCode, LOCALE_SISO639LANGNAME, szLangName, ARRAYSIZE(szLangName)))
     {
         return false;
     }
 
     TCHAR szRegionName[64] = {};
 
-    if (!GetLocaleInfo(wLangCode, LOCALE_SISO3166CTRYNAME, szRegionName, sizeof(szRegionName)))
+    if (!GetLocaleInfo(wLangCode, LOCALE_SISO3166CTRYNAME, szRegionName, ARRAYSIZE(szRegionName)))
     {
         return false;
     }
