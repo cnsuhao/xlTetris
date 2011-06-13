@@ -14,7 +14,7 @@
 //------------------------------------------------------------------------------
 
 
-#include <xl/String/xlUTF8.h>
+#include <xl/String/xlEncoding.h>
 #include <Loki/ScopeGuard.h>
 #include "Utility/XmlParser.h"
 #include "Language.h"
@@ -53,7 +53,7 @@ bool Language::Initialize(LPCTSTR lpszXmlFile)
     DWORD dwRead = 0;
     bool bSucceeded = (ReadFile(hFile, pBuffer, li.LowPart, &dwRead, NULL) && dwRead == li.LowPart);
     xl::String strXml;
-    xl::UTF8::Decode(pBuffer, &strXml);
+    xl::Encoding::Utf8ToUtf16(pBuffer, &strXml);
     delete[] pBuffer;
 
     if (!bSucceeded)
@@ -90,7 +90,7 @@ bool Language::Initialize(LPCTSTR lpszResType, UINT nResID)
     memcpy(pBuffer, lpbyRes, cbSize);
     pBuffer[cbSize] = '\0';
     xl::String strXml;
-    xl::UTF8::Decode(pBuffer, &strXml);
+    xl::Encoding::Utf8ToUtf16(pBuffer, &strXml);
     delete[] pBuffer;
 
     if (!InnerInit(strXml))
