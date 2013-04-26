@@ -16,12 +16,15 @@
 
 #include "Game.h"
 #include <time.h>
-
+#include <tchar.h>
+#include <xl/String/xlString.h>
+#include "Language.h"
 
 Game::Game() :
     m_hWnd(nullptr),
     m_bStarted(false),
     m_bPaused(false),
+    m_bGameover(false),
     dwCount(0)
 {
     memset(m_byGameMap, 0, sizeof(m_byGameMap));
@@ -45,6 +48,7 @@ bool Game::Initialize(HWND hWnd, LPCRECT rectGame, LPCRECT rectPreview, FN_AddSc
 
     m_fnAddScore = fnAddScore;
     m_fnGameOver = fnGameover;
+    m_bGameover = false;
 
     return true;
 }
@@ -223,6 +227,11 @@ bool Game::Render(HDC hDC)
     DrawBackground(hDC);
     DrawShape(hDC);
 
+    if (m_bGameover)
+    {
+        DrawGameOver(hDC);
+    }
+
     return true;
 }
 
@@ -322,6 +331,20 @@ void Game::DrawPreviewShape(HDC hDC)
             }
         }
     }
+}
+
+void Game::DrawGameOver(HDC hDC)
+{
+    xl::String strGameover = _Language.GetString(_T("ID_GameOver"));
+
+    HFONT hFont = (HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0, 0);
+    HFONT hOldFont = (HFONT)SelectObject(hDC, hFont);
+    int nBkMode = SetBkMode(hDC, TRANSPARENT);
+    COLORREF color = SetTextColor(hDC, RGB(0xff, 0xff, 0x00));
+    DrawText(hDC, strGameover.GetAddress(), strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+    SetTextColor(hDC, color);
+    SetBkMode(hDC, nBkMode);
+    SelectObject(hDC, hOldFont);
 }
 
 bool Game::CanDown()
@@ -532,7 +555,9 @@ bool Game::NextTetris(HDC hDC)
 
     if (IsGameOver())
     {
+        m_bGameover = true;
         Stop();
+        DrawGameOver(hDC);
         m_fnGameOver();
     }
     else

@@ -66,6 +66,7 @@ private:
 private:
     bool m_bStarted;
     bool m_bPaused;
+    bool m_bGameover;
     DWORD dwCount;
 
 private:
@@ -94,6 +95,8 @@ private:
     void DrawShape(HDC hDC);
     // Draw preview Tetris
     void DrawPreviewShape(HDC hDC);
+    // Draw game-over prompt
+    void DrawGameOver(HDC hDC);
 
 private:
     // If can move down

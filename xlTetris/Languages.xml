@@ -28,6 +28,9 @@
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">溪流软件工作室</a>出品]]>
         </String>
+        <String ID="ID_GameOver">
+            <![CDATA[游戏结束]]>
+        </String>
     </Language>
     <Language Name="zh-TW" DisplayName="中文(繁體)">
         <String ID="SampleString">
@@ -57,6 +60,9 @@
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">溪流軟件工作室</a>出品]]>
         </String>
+        <String ID="ID_GameOver">
+            <![CDATA[遊戲結束]]>
+        </String>
     </Language>
     <Language Name="en" DisplayName="English">
         <String ID="SampleString">
@@ -85,6 +91,9 @@
         </String>
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">Streamlet Studio</a>]]>
+        </String>
+        <String ID="ID_GameOver">
+            <![CDATA[Game Over]]>
         </String>
     </Language>
 </Languages>
