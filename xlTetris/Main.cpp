@@ -33,7 +33,7 @@ int WINAPI _tWinMain(__in HINSTANCE hInstance,
             strMessage = _T("Failed to initialize the application.");
         }
 
-        MessageBox(NULL, strMessage.GetAddress(), NULL, MB_OK | MB_ICONEXCLAMATION);
+        MessageBox(NULL, strMessage, NULL, MB_OK | MB_ICONEXCLAMATION);
 
         return 0;
     }

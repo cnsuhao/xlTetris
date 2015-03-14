@@ -341,7 +341,7 @@ void Game::DrawGameOver(HDC hDC)
     HFONT hOldFont = (HFONT)SelectObject(hDC, hFont);
     int nBkMode = SetBkMode(hDC, TRANSPARENT);
     COLORREF color = SetTextColor(hDC, RGB(0xff, 0xff, 0x00));
-    DrawText(hDC, strGameover.GetAddress(), strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+    DrawText(hDC, strGameover, strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
     SetTextColor(hDC, color);
     SetBkMode(hDC, nBkMode);
     SelectObject(hDC, hOldFont);

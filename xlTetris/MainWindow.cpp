@@ -87,23 +87,23 @@ void MainWindow::SetTexts()
     xl::String strText;
 
     strText = _Language.GetString(_T("ID_MainWindow_Caption"));
-    SetWindowText(strText.GetAddress());
+    SetWindowText(strText);
 
     strText = _Language.GetString(_T("ID_MainWindow_Lable_Score"));
-    m_labelScoreInst.SetWindowText(strText.GetAddress());
+    m_labelScoreInst.SetWindowText(strText);
 
     m_labelScore.SetWindowText(_T("0"));
 
     m_strPause = _Language.GetString(_T("ID_MainWindow_Button_Pause"));
-    m_buttonPause.SetWindowText(m_strPause.GetAddress());
+    m_buttonPause.SetWindowText(m_strPause);
     m_strContinue = _Language.GetString(_T("ID_MainWindow_Button_Continue"));
 
     m_strStart = _Language.GetString(_T("ID_MainWindow_Button_Start"));
-    m_buttonStart.SetWindowText(m_strStart.GetAddress());
+    m_buttonStart.SetWindowText(m_strStart);
     m_strStop = _Language.GetString(_T("ID_MainWindow_Button_Stop"));
 
     strText = _Language.GetString(_T("ID_MainWnd_Link_WebSite"));
-    m_linkWebSite.SetWindowText(strText.GetAddress());
+    m_linkWebSite.SetWindowText(strText);
 }
 
 LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
@@ -272,9 +272,9 @@ LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND
 
 void MainWindow::Start()
 {
-    m_buttonStart.SetWindowText(m_strStop.GetAddress());
+    m_buttonStart.SetWindowText(m_strStop);
 
-    m_buttonPause.SetWindowText(m_strPause.GetAddress());
+    m_buttonPause.SetWindowText(m_strPause);
     m_buttonPause.EnableWindow();
 
     m_nScore = 0;
@@ -292,9 +292,9 @@ void MainWindow::Stop()
     m_bStarted = false;
 
     m_buttonPause.EnableWindow(FALSE);
-    m_buttonPause.SetWindowText(m_strPause.GetAddress());
+    m_buttonPause.SetWindowText(m_strPause);
 
-    m_buttonStart.SetWindowText(m_strStart.GetAddress());
+    m_buttonStart.SetWindowText(m_strStart);
 }
 
 void MainWindow::Pause()
@@ -302,12 +302,12 @@ void MainWindow::Pause()
     _Game.Pause();
     m_bPaused = true;
 
-    m_buttonPause.SetWindowText(m_strContinue.GetAddress());
+    m_buttonPause.SetWindowText(m_strContinue);
 }
 
 void MainWindow::Continue()
 {
-    m_buttonPause.SetWindowText(m_strPause.GetAddress());
+    m_buttonPause.SetWindowText(m_strPause);
 
     m_bPaused = false;
     SetFocus();
