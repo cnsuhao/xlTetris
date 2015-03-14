@@ -63,15 +63,12 @@ bool Game::Start()
 
     GenerateNewTetris();
 
-    HDC hDC = GetDC(m_hWnd);
-
-    Clear(hDC, &m_rectGame);
-    NextTetris(hDC);
-
-    ReleaseDC(m_hWnd, hDC);
+    NextTetris();
 
     m_bPaused = false;
     m_bStarted = true;
+
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
@@ -96,54 +93,36 @@ bool Game::Continue()
 
 bool Game::Left()
 {
-    HDC hDC = GetDC(m_hWnd);
-
-    ClearShape(hDC);
-
     if (CanLeft())
     {
         --m_pointPosition.x;
     }
 
-    DrawShape(hDC);
-
-    ReleaseDC(m_hWnd, hDC);
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
 
 bool Game::Right()
 {
-    HDC hDC = GetDC(m_hWnd);
-
-    ClearShape(hDC);
-
     if (CanRight())
     {
         ++m_pointPosition.x;
     }
 
-    DrawShape(hDC);
-
-    ReleaseDC(m_hWnd, hDC);
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
 
 bool Game::Down()
 {
-    HDC hDC = GetDC(m_hWnd);
-
-    ClearShape(hDC);
-
     if (CanDown())
     {
         ++m_pointPosition.y;
     }
 
-    DrawShape(hDC);
-
-    ReleaseDC(m_hWnd, hDC);
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
@@ -155,16 +134,10 @@ bool Game::RotateLeft()
         return false;
     }
 
-    HDC hDC = GetDC(m_hWnd);
-
-    ClearShape(hDC);
-
     Shape::RotateLeft(m_shapeGaming);
     Shape::GetSize(m_shapeGaming, &m_size);
 
-    DrawShape(hDC);
-
-    ReleaseDC(m_hWnd, hDC);
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
@@ -176,16 +149,12 @@ bool Game::RotateRight()
         return false;
     }
 
-    HDC hDC = GetDC(m_hWnd);
-
-    ClearShape(hDC);
-
     Shape::RotateRight(m_shapeGaming);
     Shape::GetSize(m_shapeGaming, &m_size);
 
-    DrawShape(hDC);
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
-    ReleaseDC(m_hWnd, hDC);    return true;
+    return true;
 }
 
 bool Game::Gaming()
@@ -202,22 +171,18 @@ bool Game::Gaming()
 
     dwCount = 0;
 
-    HDC hDC = GetDC(m_hWnd);
-
     if (CanDown())
     {
-        ClearShape(hDC);
         ++m_pointPosition.y;
-        DrawShape(hDC);
     }
     else
     {
-        Paste(hDC);
-        ClearFullRow(hDC);
-        NextTetris(hDC);
+        Paste();
+        ClearFullRow();
+        NextTetris();
     }
-    
-    ReleaseDC(m_hWnd, hDC);
+
+    InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
     return true;
 }
@@ -225,6 +190,7 @@ bool Game::Gaming()
 bool Game::Render(HDC hDC)
 {
     DrawBackground(hDC);
+    DrawPreviewShape(hDC);
     DrawShape(hDC);
 
     if (m_bGameover)
@@ -471,7 +437,7 @@ bool Game::CanRotateRight()
     return true;
 }
 
-bool Game::Paste(HDC hDC)
+bool Game::Paste()
 {
     for (int i = 0; i < Shape::MAX_SHAPE_SIZE; ++i)
     {
@@ -484,7 +450,7 @@ bool Game::Paste(HDC hDC)
     return true;
 }
 
-bool Game::ClearFullRow(HDC hDC)
+bool Game::ClearFullRow()
 {
     int nDistance = 0;
 
@@ -504,26 +470,12 @@ bool Game::ClearFullRow(HDC hDC)
         if (bFull)
         {
             ++nDistance;
-
-            for (int i = 0; i < TETRIS_MAX_X; ++i)
-            {
-                ClearTetris(hDC, i, j);
-            }
         }
         else if (nDistance > 0)
         {
             for (int i = 0; i < TETRIS_MAX_X; ++i)
             {
                 m_byGameMap[j + nDistance][i] = m_byGameMap[j][i];
-
-                if (m_byGameMap[j][i] != 0)
-                {
-                    DrawTetris(hDC, i, j + nDistance);
-                }
-                else
-                {
-                    ClearTetris(hDC, i, j + nDistance);
-                }
             }
         }
     }
@@ -533,7 +485,6 @@ bool Game::ClearFullRow(HDC hDC)
         for (int i = 0; i < TETRIS_MAX_X; ++i)
         {
             m_byGameMap[j][i] =0;
-            ClearTetris(hDC, i, j);
         }
     }
 
@@ -546,7 +497,7 @@ bool Game::ClearFullRow(HDC hDC)
     return false;
 }
 
-bool Game::NextTetris(HDC hDC)
+bool Game::NextTetris()
 {
     memcpy(m_shapeGaming, m_shapePreview, sizeof(Shape::ShapeMatrix));
     Shape::GetSize(m_shapeGaming, &m_size);
@@ -557,15 +508,11 @@ bool Game::NextTetris(HDC hDC)
     {
         m_bGameover = true;
         Stop();
-        DrawGameOver(hDC);
         m_fnGameOver();
     }
     else
     {
-        DrawShape(hDC);
-
         GenerateNewTetris();
-        DrawPreviewShape(hDC);
     }
 
     return true;
@@ -575,6 +522,8 @@ bool Game::GenerateNewTetris()
 {
     Shape::TetrisShapes ts = (Shape::TetrisShapes)(rand() % Shape::TS_MAX);
     Shape::GetPredefinedShape(ts, m_shapePreview);
+
+    InvalidateRect(m_hWnd, &m_rectPreview, TRUE);
 
     return true;
 }

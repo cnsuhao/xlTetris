@@ -126,36 +126,17 @@ LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 LRESULT MainWindow::OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    HDC hDC = (HDC)wParam;
-
-    RECT rect;
-    GetClientRect(&rect);
-
-    SetDCBrushColor(hDC, GetSysColor(COLOR_3DFACE));
-    HBRUSH hBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-    FillRect(hDC, &MW_INST_RECT, hBrush);
-
-    hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    FillRect(hDC, &MW_GAME_RECT, hBrush);
-    FillRect(hDC, &MW_PREVIEW_RECT, hBrush);
-
     return TRUE;
 }
 
 LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    RECT rect;
-    GetClientRect(&rect);
-
-    HPEN hPen = (HPEN)GetStockObject(WHITE_PEN);
-
     PAINTSTRUCT ps = {};
     BeginPaint(&ps);
 
-    if (ps.fErase)
-    {
-        SendMessage(WM_ERASEBKGND, (WPARAM)ps.hdc, 0);
-    }
+    SetDCBrushColor(ps.hdc, GetSysColor(COLOR_3DFACE));
+    HBRUSH hBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+    FillRect(ps.hdc, &MW_INST_RECT, hBrush);
 
     _Game.Render(ps.hdc);
 

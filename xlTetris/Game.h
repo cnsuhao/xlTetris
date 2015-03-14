@@ -110,11 +110,11 @@ private:
     // If can rotate right
     bool CanRotateRight();
     // Past the current Tetris to background
-    bool Paste(HDC hDC);
+    bool Paste();
     // Check all rows and clear those with blocks full filled.
-    bool ClearFullRow(HDC hDC);
+    bool ClearFullRow();
     // Use the Tetris in preview region as the current one, jduge if game over, and generate new preview Tetris
-    bool NextTetris(HDC hDC);
+    bool NextTetris();
     // Generate new preview Tetris
     bool GenerateNewTetris();
     // Judge if game over
