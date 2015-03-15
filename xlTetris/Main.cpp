@@ -24,6 +24,8 @@ int WINAPI _tWinMain(__in HINSTANCE hInstance,
                      __in LPTSTR lpCmdLine,
                      __in int nShowCmd)
 {
+    ::CoInitialize(NULL);
+
     if (!_Tetris.Initialize())
     {
         xl::String strMessage = _Language.GetString(_T("ID_App_Init_Fail"));

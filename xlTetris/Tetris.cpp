@@ -20,6 +20,8 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "resource.h"
+#include "GDIRender.h"
+#include "D2DRender.h"
 
 Tetris::Tetris() :
     m_hWaitableTimer(nullptr)
@@ -51,6 +53,13 @@ bool Tetris::Initialize()
         return false;
     }
 
+//     _Renderer = new GDIRenderer;
+    _Renderer = new D2DRenderer;
+    if (!_Renderer->Initialize())
+    {
+        return false;
+    }
+
     const int nX = (GetSystemMetrics(SM_CXSCREEN) - MW_WIDTH)  / 2;
     const int nY = (GetSystemMetrics(SM_CYSCREEN) - MW_HEIGHT - 28) / 2;
 
@@ -71,6 +80,8 @@ bool Tetris::Initialize()
 
 void Tetris::Release()
 {
+    _Renderer->Uninitialize();
+
     if (m_hWaitableTimer != nullptr)
     {
         CloseHandle(m_hWaitableTimer);

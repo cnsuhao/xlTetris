@@ -147,7 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="D2DRender.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GDIRender.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -160,9 +162,12 @@
     <None Include="Tetris.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D2DRender.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GDIRender.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Language.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Tetris.h" />

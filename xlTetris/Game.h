@@ -20,6 +20,7 @@
 #include <xl/Meta/xlFunction.h>
 #include <Windows.h>
 #include "Shape.h"
+#include "Renderer.h"
 
 const int TETRIS_SIZE  = 24;
 const int TETRIS_MAX_X = 10;
@@ -54,7 +55,7 @@ public:
     bool Gaming();
 
 public:
-    bool Render(HDC hDC);
+    bool Render(RenderContext *pRC);
 
 private:
     HWND m_hWnd;
@@ -80,23 +81,25 @@ private:
 
 private:
     // Draw background Tetris
-    void DrawBackground(HDC hDC);
+    void DrawBackground(RenderContext *pRC);
     // Clear a region
-    void Clear(HDC hDC, LPCRECT rect);
+    void Clear(RenderContext *pRC, LPCRECT rect);
     // Clear a block of Tetris
-    void ClearTetris(HDC hDC, int x, int y);
+    void ClearTetris(RenderContext *pRC, int x, int y);
     // Draw a block of Tetris
-    void DrawTetris(HDC hDC, int x, int y);
+    void DrawTetris(RenderContext *pRC, int x, int y);
     // Draw Tetris in preview region
-    void DrawPreviewTetris(HDC hDC, int x, int y);
+    void DrawPreviewTetris(RenderContext *pRC, int x, int y);
     // Clear current Tetris
-    void ClearShape(HDC hDC);
+    void ClearShape(RenderContext *pRC);
     // Draw current Tetris
-    void DrawShape(HDC hDC);
+    void DrawShape(RenderContext *pRC);
     // Draw preview Tetris
-    void DrawPreviewShape(HDC hDC);
+    void DrawPreviewShape(RenderContext *pRC);
     // Draw game-over prompt
-    void DrawGameOver(HDC hDC);
+    void DrawGameOver(RenderContext *pRC);
+    // Draw render engine name
+    void DrawRenderEngine(RenderContext *pRC);
 
 private:
     // If can move down

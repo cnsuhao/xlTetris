@@ -22,6 +22,7 @@
 #include <xl/Win32/GUI/xlStdStatic.h>
 #include <xl/Win32/GUI/xlStdLink.h>
 #include <xl/String/xlString.h>
+#include "Renderer.h"
 
 const int  MW_WIDTH         = 400;
 const int  MW_HEIGHT        = 480;
@@ -96,6 +97,9 @@ public:
     void OnAddScore(int nScore);
     // The callback to _Game, called when game over.
     void OnGameOver();
+
+private:
+    RenderContext *m_pRC;
 
 private:
     xl::String m_strStart;

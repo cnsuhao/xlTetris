@@ -18,6 +18,7 @@
 
 
 #include <Windows.h>
+#include "Renderer.h"
 
 class Tetris
 {

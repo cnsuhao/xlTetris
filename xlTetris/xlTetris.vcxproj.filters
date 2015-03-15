@@ -25,6 +25,9 @@
     <Filter Include="Game">
       <UniqueIdentifier>{30718d2c-d965-4674-a2d6-f53ca9a6a3d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{cbe0eb99-a100-4371-85b8-333bcba4a711}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\XmlParser.cpp">
@@ -47,6 +50,12 @@
     </ClCompile>
     <ClCompile Include="Shape.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GDIRender.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="D2DRender.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +87,15 @@
     </ClInclude>
     <ClInclude Include="Shape.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GDIRender.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="D2DRender.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

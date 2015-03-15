@@ -33,6 +33,7 @@ enum
 };
 
 MainWindow::MainWindow() :
+    m_pRC(nullptr),
     m_bStarted(false),
     m_bPaused(false),
     m_nScore(0)
@@ -108,6 +109,9 @@ void MainWindow::SetTexts()
 
 LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
+    ModifyStyle(0, WS_CLIPCHILDREN);
+    m_pRC = _Renderer->CreateContext(hWnd);
+
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TETRIS));
     SetIcon(hIcon);
     SetIcon(hIcon, FALSE);
@@ -120,6 +124,8 @@ LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
+    _Renderer->ReleaseContext(m_pRC);
+
     PostQuitMessage(0);
     return FALSE;
 }
@@ -131,16 +137,15 @@ LRESULT MainWindow::OnEraseBackground(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    PAINTSTRUCT ps = {};
-    BeginPaint(&ps);
+    m_pRC->BeginDraw();
 
-    SetDCBrushColor(ps.hdc, GetSysColor(COLOR_3DFACE));
-    HBRUSH hBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-    FillRect(ps.hdc, &MW_INST_RECT, hBrush);
+    COLORREF clr = GetSysColor(COLOR_3DFACE);
+    RGBQUAD color = { GetBValue(clr), GetGValue(clr), GetRValue(clr), 0xff };
+    m_pRC->FillSolidRect(&MW_INST_RECT, color);
 
-    _Game.Render(ps.hdc);
+    _Game.Render(m_pRC);
 
-    EndPaint(&ps);
+    m_pRC->EndDraw();
 
     return FALSE;
 }

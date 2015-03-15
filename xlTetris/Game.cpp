@@ -18,6 +18,7 @@
 #include <time.h>
 #include <tchar.h>
 #include <xl/String/xlString.h>
+#include <xl/Meta/xlBind.h>
 #include "Language.h"
 
 Game::Game() :
@@ -67,6 +68,7 @@ bool Game::Start()
 
     m_bPaused = false;
     m_bStarted = true;
+    m_bGameover = false;
 
     InvalidateRect(m_hWnd, &m_rectGame, TRUE);
 
@@ -187,21 +189,23 @@ bool Game::Gaming()
     return true;
 }
 
-bool Game::Render(HDC hDC)
+bool Game::Render(RenderContext *pRC)
 {
-    DrawBackground(hDC);
-    DrawPreviewShape(hDC);
-    DrawShape(hDC);
+    DrawBackground(pRC);
+    DrawPreviewShape(pRC);
+    DrawShape(pRC);
 
     if (m_bGameover)
     {
-        DrawGameOver(hDC);
+        DrawGameOver(pRC);
     }
+
+    DrawRenderEngine(pRC);
 
     return true;
 }
 
-void Game::DrawBackground(HDC hDC)
+void Game::DrawBackground(RenderContext *pRC)
 {
     for (int i = 0; i < TETRIS_MAX_X; ++i)
     {
@@ -209,53 +213,53 @@ void Game::DrawBackground(HDC hDC)
         {
             if (m_byGameMap[j][i] != 0)
             {
-                DrawTetris(hDC, i, j);
+                DrawTetris(pRC, i, j);
             }
             else
             {
-                ClearTetris(hDC, i, j);
+                ClearTetris(pRC, i, j);
             }
         }
     }
 }
 
-void Game::Clear(HDC hDC, LPCRECT rect)
+void Game::Clear(RenderContext *pRC, LPCRECT rect)
 {
-    HBRUSH hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    FillRect(hDC, rect, hBrush);
+    RGBQUAD color = { 0x00, 0x00, 0x00, 0xff };
+    pRC->FillSolidRect(rect, color);
 }
 
-void Game::ClearTetris(HDC hDC, int x, int y)
+void Game::ClearTetris(RenderContext *pRC, int x, int y)
 {
     RECT rect = { m_rectGame.left + x * TETRIS_SIZE,
                   m_rectGame.top  + y * TETRIS_SIZE,
                   m_rectGame.left + (x + 1) * TETRIS_SIZE,
                   m_rectGame.top  + (y + 1) * TETRIS_SIZE };
-    HBRUSH hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    FillRect(hDC, &rect, hBrush);
+    RGBQUAD color = { 0x00, 0x00, 0x00, 0xff };
+    pRC->FillSolidRect(&rect, color);
 }
 
-void Game::DrawTetris(HDC hDC, int x, int y)
+void Game::DrawTetris(RenderContext *pRC, int x, int y)
 {
     RECT rect = { m_rectGame.left + x * TETRIS_SIZE + 1,
                   m_rectGame.top  + y * TETRIS_SIZE + 1,
                   m_rectGame.left + (x + 1) * TETRIS_SIZE,
                   m_rectGame.top  + (y + 1) * TETRIS_SIZE };
-    HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
-    FillRect(hDC, &rect, hBrush);
+    RGBQUAD color = { 0x80, 0x80, 0x80, 0xff };
+    pRC->FillSolidRect(&rect, color);
 }
 
-void Game::DrawPreviewTetris(HDC hDC, int x, int y)
+void Game::DrawPreviewTetris(RenderContext *pRC, int x, int y)
 {
     RECT rect = { m_rectPreview.left + x * TETRIS_SIZE + 1,
                   m_rectPreview.top  + y * TETRIS_SIZE + 1,
                   m_rectPreview.left + (x + 1) * TETRIS_SIZE,
                   m_rectPreview.top  + (y + 1) * TETRIS_SIZE };
-    HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
-    FillRect(hDC, &rect, hBrush);
+    RGBQUAD color = { 0x80, 0x80, 0x80, 0xff };
+    pRC->FillSolidRect(&rect, color);
 }
 
-void Game::ClearShape(HDC hDC)
+void Game::ClearShape(RenderContext *pRC)
 {
     for (int i = 0; i < Shape::MAX_SHAPE_SIZE; ++i)
     {
@@ -263,13 +267,13 @@ void Game::ClearShape(HDC hDC)
         {
             if (m_shapeGaming[j][i] != 0)
             {
-                ClearTetris(hDC, m_pointPosition.x + i, m_pointPosition.y + j);
+                ClearTetris(pRC, m_pointPosition.x + i, m_pointPosition.y + j);
             }
         }
     }
 }
 
-void Game::DrawShape(HDC hDC)
+void Game::DrawShape(RenderContext *pRC)
 {
     for (int i = 0; i < Shape::MAX_SHAPE_SIZE; ++i)
     {
@@ -277,15 +281,15 @@ void Game::DrawShape(HDC hDC)
         {
             if (m_shapeGaming[j][i] != 0)
             {
-                DrawTetris(hDC, m_pointPosition.x + i, m_pointPosition.y + j);
+                DrawTetris(pRC, m_pointPosition.x + i, m_pointPosition.y + j);
             }
         }
     }
 }
 
-void Game::DrawPreviewShape(HDC hDC)
+void Game::DrawPreviewShape(RenderContext *pRC)
 {
-    Clear(hDC, &m_rectPreview);
+    Clear(pRC, &m_rectPreview);
 
     for (int i = 0; i < Shape::MAX_SHAPE_SIZE; ++i)
     {
@@ -293,24 +297,24 @@ void Game::DrawPreviewShape(HDC hDC)
         {
             if (m_shapePreview[j][i] != 0)
             {
-                DrawPreviewTetris(hDC, 1 + i, 1 + j);
+                DrawPreviewTetris(pRC, 1 + i, 1 + j);
             }
         }
     }
 }
 
-void Game::DrawGameOver(HDC hDC)
+void Game::DrawGameOver(RenderContext *pRC)
 {
     xl::String strGameover = _Language.GetString(_T("ID_GameOver"));
+    RGBQUAD color = { 0x00, 0xff, 0xff, 0xff };
+    pRC->DrawText(strGameover, strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER, color);
+}
 
-    HFONT hFont = (HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0, 0);
-    HFONT hOldFont = (HFONT)SelectObject(hDC, hFont);
-    int nBkMode = SetBkMode(hDC, TRANSPARENT);
-    COLORREF color = SetTextColor(hDC, RGB(0xff, 0xff, 0x00));
-    DrawText(hDC, strGameover, strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-    SetTextColor(hDC, color);
-    SetBkMode(hDC, nBkMode);
-    SelectObject(hDC, hOldFont);
+void Game::DrawRenderEngine(RenderContext *pRC)
+{
+    xl::String strRenderer = _Renderer->GetName();
+    RGBQUAD color = { 0x00, 0x80, 0x80, 0x80 };
+    pRC->DrawText(strRenderer, strRenderer.Length(), &m_rectGame, DT_SINGLELINE, color);
 }
 
 bool Game::CanDown()
