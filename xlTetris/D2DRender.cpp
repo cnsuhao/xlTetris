@@ -14,8 +14,7 @@
 
 
 #include "D2DRender.h"
-#pragma comment(lib, "D2d1.lib")
-// #pragma comment(lib, "DWrite.lib")
+#include "D2DDynamic.h"
 
 
 D2DRenderContext::D2DRenderContext(HWND hWnd, D2DRenderer *pRenderer) :
@@ -135,23 +134,15 @@ LPCTSTR D2DRenderer::GetName()
 
 bool D2DRenderer::Initialize()
 {
-    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pD2DFactory);
+    D2D1_FACTORY_OPTIONS dfo = { D2D1_DEBUG_LEVEL_NONE };
+    HRESULT hr = _D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory), &dfo, (void **)&m_pD2DFactory);
 
     if (FAILED(hr) || m_pD2DFactory == nullptr)
     {
         return false;
     }
 
-    IUnknown *pUnknown = nullptr;
-    hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), &pUnknown);
-
-    if (FAILED(hr) || pUnknown == nullptr)
-    {
-        return false;
-    }
-
-    hr = pUnknown->QueryInterface(&m_pDWriteFactory);
-    pUnknown->Release();
+    hr = _DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown **)&m_pDWriteFactory);
 
     if (FAILED(hr) || m_pDWriteFactory == nullptr)
     {

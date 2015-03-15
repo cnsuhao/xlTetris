@@ -97,6 +97,9 @@
     <ClInclude Include="D2DRender.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="D2DDynamic.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tetris.rc">

@@ -162,6 +162,7 @@
     <None Include="Tetris.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D2DDynamic.h" />
     <ClInclude Include="D2DRender.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GDIRender.h" />

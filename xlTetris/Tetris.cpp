@@ -53,17 +53,25 @@ bool Tetris::Initialize()
         return false;
     }
 
-//     _Renderer = new GDIRenderer;
     _Renderer = new D2DRenderer;
+
     if (!_Renderer->Initialize())
     {
-        return false;
+        _Renderer->Uninitialize();
+
+        delete _Renderer;
+        _Renderer = new GDIRenderer;
+
+        if (!_Renderer->Initialize())
+        {
+            return false;
+        }
     }
 
     const int nX = (GetSystemMetrics(SM_CXSCREEN) - MW_WIDTH)  / 2;
     const int nY = (GetSystemMetrics(SM_CYSCREEN) - MW_HEIGHT - 28) / 2;
 
-    _MainWindow.Create(nX, nY, MW_WIDTH, MW_HEIGHT + 28);
+    _MainWindow.Create(nX, nY, MW_WIDTH, MW_HEIGHT + GetSystemMetrics(SM_CYCAPTION));
 
     if (!_Game.Initialize(_MainWindow.GetHWND(),
                           &MW_GAME_RECT,
