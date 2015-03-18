@@ -21,7 +21,8 @@
 #include "Game.h"
 #include "resource.h"
 #include "GDIRender.h"
-#include "D2DRender.h"
+#include "D2D10Render.h"
+#include "D2D11Render.h"
 
 Tetris::Tetris() :
     m_hWaitableTimer(nullptr)
@@ -53,25 +54,35 @@ bool Tetris::Initialize()
         return false;
     }
 
-    _Renderer = new D2DRenderer;
+    _Renderer = new D2D11Renderer;
 
     if (!_Renderer->Initialize())
     {
         _Renderer->Uninitialize();
 
         delete _Renderer;
-        _Renderer = new GDIRenderer;
+        _Renderer = new D2D10Renderer;
 
         if (!_Renderer->Initialize())
         {
-            return false;
+            _Renderer->Uninitialize();
+
+            delete _Renderer;
+            _Renderer = new GDIRenderer;
+
+            if (!_Renderer->Initialize())
+            {
+                return false;
+            }
         }
     }
 
-    const int nX = (GetSystemMetrics(SM_CXSCREEN) - MW_WIDTH)  / 2;
-    const int nY = (GetSystemMetrics(SM_CYSCREEN) - MW_HEIGHT - 28) / 2;
+    const int nWidth = MW_WIDTH + GetSystemMetrics(SM_CXFRAME) * 2;
+    const int nHeight = MW_HEIGHT + GetSystemMetrics(SM_CYFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
+    const int nX = (GetSystemMetrics(SM_CXSCREEN) - nWidth) / 2;
+    const int nY = (GetSystemMetrics(SM_CYSCREEN) - nHeight) / 2;
 
-    _MainWindow.Create(nX, nY, MW_WIDTH, MW_HEIGHT + GetSystemMetrics(SM_CYCAPTION));
+    _MainWindow.Create(nX, nY, nWidth, nHeight);
 
     if (!_Game.Initialize(_MainWindow.GetHWND(),
                           &MW_GAME_RECT,

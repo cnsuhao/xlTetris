@@ -27,6 +27,8 @@ struct RenderMethods
 
 struct RenderContext : public RenderMethods
 {
+    virtual bool Initialize() = 0;
+    virtual void Uninitialize() = 0;
     virtual void BeginDraw() = 0;
     virtual void EndDraw() = 0;
 };

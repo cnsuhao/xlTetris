@@ -2,9 +2,9 @@
 //
 //    Copyright (C) Streamlet. All rights reserved.
 //
-//    File Name:   D2DRender.h
+//    File Name:   D2D10Render.h
 //    Author:      Streamlet
-//    Create Time: 2015-03-14
+//    Create Time: 2015-03-17
 //    Description: 
 //
 //    Version history:
@@ -12,21 +12,22 @@
 //
 //--------------------------------------------------------------------
 
-#ifndef __D2DRENDER_H_57B0DFA8_91CD_4B34_B4DF_39C4437292B1_INCLUDED__
-#define __D2DRENDER_H_57B0DFA8_91CD_4B34_B4DF_39C4437292B1_INCLUDED__
+#ifndef __D2D10RENDER_H_4A811EE0_5DA9_4BCC_A4D1_B04406312E6C_INCLUDED__
+#define __D2D10RENDER_H_4A811EE0_5DA9_4BCC_A4D1_B04406312E6C_INCLUDED__
 
 
+#include <xl/Win32/Memory/xlSafeSmartPtr.h>
 #include "Renderer.h"
 #include <d2d1.h>
 #include <dwrite.h>
 
 
-class D2DRenderer;
-class D2DRenderContext : public RenderContext
+class D2D10Renderer;
+class D2D10RenderContext : public RenderContext
 {
 public:
-    D2DRenderContext(HWND hWnd, D2DRenderer *pRenderer);
-    ~D2DRenderContext();
+    D2D10RenderContext(HWND hWnd, D2D10Renderer *pRenderer);
+    ~D2D10RenderContext();
 
 public:
     // RenderMethods methods
@@ -35,23 +36,25 @@ public:
 
 public:
     // RenderContext Methods
+    bool Initialize() override;
+    void Uninitialize() override;
     void BeginDraw() override;
     void EndDraw() override;
 
 private:
     HWND m_hWnd;
-    D2DRenderer *m_pRenderer;
+    D2D10Renderer *m_pRenderer;
     ID2D1HwndRenderTarget *m_pRenderTarget;
     ID2D1SolidColorBrush *m_pSolidBrush;
     IDWriteTextFormat *m_pTextFormat;
 
 };
 
-class D2DRenderer : public Renderer
+class D2D10Renderer : public Renderer
 {
 public:
-    D2DRenderer();
-    ~D2DRenderer();
+    D2D10Renderer();
+    ~D2D10Renderer();
 
 public:
     // Render methods
@@ -62,9 +65,9 @@ public:
     void ReleaseContext(RenderContext *pContext) override;
 
 private:
-    friend D2DRenderContext;
+    friend D2D10RenderContext;
     ID2D1Factory *m_pD2DFactory;
     IDWriteFactory *m_pDWriteFactory;
 };
 
-#endif // #ifndef __D2DRENDER_H_57B0DFA8_91CD_4B34_B4DF_39C4437292B1_INCLUDED__
+#endif // #ifndef __D2D10RENDER_H_4A811EE0_5DA9_4BCC_A4D1_B04406312E6C_INCLUDED__

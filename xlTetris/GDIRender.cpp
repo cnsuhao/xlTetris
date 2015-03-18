@@ -20,12 +20,11 @@ GDIRenderContext::GDIRenderContext(HWND hWnd) :
     m_hWnd(hWnd)
 {
     ZeroMemory(&m_ps, sizeof(m_ps));
-    m_hFont = CreateFont(-DEFAULT_FONT_SIZE, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE);
 }
 
 GDIRenderContext::~GDIRenderContext()
 {
-    DeleteObject(m_hFont);
+    Uninitialize();
 }
 
 void GDIRenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
@@ -43,6 +42,23 @@ void GDIRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UI
     SelectObject(m_ps.hdc, m_hFont);
     SetBkMode(m_ps.hdc, TRANSPARENT);
     ::DrawText(m_ps.hdc, lpszext, cchText, &rc, uFormat);
+}
+
+bool GDIRenderContext::Initialize()
+{
+    m_hFont = CreateFont(-DEFAULT_FONT_SIZE, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE);
+
+    if (m_hFont == nullptr)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void GDIRenderContext::Uninitialize()
+{
+    DeleteObject(m_hFont);
 }
 
 void GDIRenderContext::BeginDraw()
@@ -63,7 +79,7 @@ GDIRenderer::GDIRenderer()
 
 GDIRenderer::~GDIRenderer()
 {
-
+    Uninitialize();
 }
 
 LPCTSTR GDIRenderer::GetName()
@@ -83,7 +99,16 @@ void GDIRenderer::Uninitialize()
 
 RenderContext *GDIRenderer::CreateContext(HWND hWnd)
 {
-    return new GDIRenderContext(hWnd);
+    RenderContext *pRC = new GDIRenderContext(hWnd);
+
+    if (!pRC->Initialize())
+    {
+        pRC->Uninitialize();
+        delete pRC;
+        return nullptr;
+    }
+
+    return pRC;
 }
 
 void GDIRenderer::ReleaseContext(RenderContext *pContext)

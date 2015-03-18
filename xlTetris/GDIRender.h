@@ -29,6 +29,8 @@ public:
     void DrawText(LPCTSTR lpszext, int cchText, LPCRECT lplpRectrc, UINT uFormat, const RGBQUAD &color) override;
 
     // RenderContext Methods
+    bool Initialize() override;
+    void Uninitialize() override;
     void BeginDraw() override;
     void EndDraw() override;
 

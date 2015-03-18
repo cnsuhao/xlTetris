@@ -54,7 +54,10 @@
     <ClCompile Include="GDIRender.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="D2DRender.cpp">
+    <ClCompile Include="D2D11Render.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="D2D10Render.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,10 +97,13 @@
     <ClInclude Include="GDIRender.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="D2DRender.h">
+    <ClInclude Include="D2DDynamic.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="D2DDynamic.h">
+    <ClInclude Include="D2D11Render.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="D2D10Render.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
