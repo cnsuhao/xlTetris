@@ -20,9 +20,9 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "resource.h"
-#include "GDIRender.h"
-#include "D2D10Render.h"
-#include "D2D11Render.h"
+#include "GDIRenderer.h"
+#include "D2D10Renderer.h"
+#include "D2D11Renderer.h"
 
 Tetris::Tetris() :
     m_hWaitableTimer(nullptr)

@@ -13,7 +13,7 @@
 //--------------------------------------------------------------------
 
 
-#include "GDIRender.h"
+#include "GDIRenderer.h"
 
 
 GDIRenderContext::GDIRenderContext(HWND hWnd) :

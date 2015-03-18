@@ -147,10 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D2D10Render.cpp" />
-    <ClCompile Include="D2D11Render.cpp" />
+    <ClCompile Include="D2D10Renderer.cpp" />
+    <ClCompile Include="D2D11Renderer.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GDIRender.cpp" />
+    <ClCompile Include="GDIRenderer.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -163,11 +163,11 @@
     <None Include="Tetris.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D2D10Render.h" />
-    <ClInclude Include="D2D11Render.h" />
-    <ClInclude Include="D2DDynamic.h" />
+    <ClInclude Include="D2D10Renderer.h" />
+    <ClInclude Include="D2D11Renderer.h" />
+    <ClInclude Include="DXDynamic.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GDIRender.h" />
+    <ClInclude Include="GDIRenderer.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Language.h" />
     <ClInclude Include="Renderer.h" />

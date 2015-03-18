@@ -14,8 +14,8 @@
 
 
 
-#include "D2D11Render.h"
-#include "D2DDynamic.h"
+#include "D2D11Renderer.h"
+#include "DXDynamic.h"
 
 #define SAFE_RELEASE_COM_PTR(p) \
     do                          \

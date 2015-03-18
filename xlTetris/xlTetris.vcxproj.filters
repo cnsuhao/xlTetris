@@ -51,13 +51,13 @@
     <ClCompile Include="Shape.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="GDIRender.cpp">
+    <ClCompile Include="D2D11Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="D2D11Render.cpp">
+    <ClCompile Include="D2D10Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="D2D10Render.cpp">
+    <ClCompile Include="GDIRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,16 +94,16 @@
     <ClInclude Include="Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="GDIRender.h">
+    <ClInclude Include="D2D11Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="D2DDynamic.h">
+    <ClInclude Include="D2D10Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="D2D11Render.h">
+    <ClInclude Include="GDIRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="D2D10Render.h">
+    <ClInclude Include="DXDynamic.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
