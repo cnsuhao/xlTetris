@@ -21,6 +21,7 @@
 #include "Game.h"
 #include "resource.h"
 #include "GDIRenderer.h"
+#include "D3D9Renderer.h"
 #include "D2D10Renderer.h"
 #include "D2D11Renderer.h"
 
@@ -54,26 +55,26 @@ bool Tetris::Initialize()
         return false;
     }
 
-    _Renderer = new D2D11Renderer;
-
-    if (!_Renderer->Initialize())
+    Renderer *pRenderers[] =
     {
-        _Renderer->Uninitialize();
+        new D3D9Renderer,
+        new D2D11Renderer,
+        new D2D10Renderer,
+        new GDIRenderer,
+    };
 
-        delete _Renderer;
-        _Renderer = new D2D10Renderer;
-
-        if (!_Renderer->Initialize())
+    for (int i = 0; i < _countof(pRenderers); ++i)
+    {
+        if (_Renderer == nullptr)
         {
-            _Renderer->Uninitialize();
-
-            delete _Renderer;
-            _Renderer = new GDIRenderer;
-
-            if (!_Renderer->Initialize())
+            if (pRenderers[i]->Initialize())
             {
-                return false;
+                _Renderer = pRenderers[i];
             }
+        }
+        else
+        {
+            delete pRenderers[i];
         }
     }
 
@@ -144,6 +145,3 @@ void Tetris::Run()
         }
     }
 }
-
-
-

@@ -60,6 +60,9 @@
     <ClCompile Include="GDIRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="D3D9Renderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Languages.xml">
@@ -104,6 +107,9 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="DXDynamic.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D9Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
