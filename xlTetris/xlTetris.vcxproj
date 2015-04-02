@@ -164,6 +164,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NullRenderer.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Tetris.cpp" />
     <ClCompile Include="Utility\XmlParser.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="GDIRenderer.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Language.h" />
+    <ClInclude Include="NullRenderer.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shape.h" />

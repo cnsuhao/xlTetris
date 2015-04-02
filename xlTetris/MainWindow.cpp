@@ -20,6 +20,7 @@
 #include <ShellAPI.h>
 #include "Game.h"
 #include "resource.h"
+#include "NullRenderer.h"
 
 enum
 {
@@ -111,6 +112,11 @@ LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 {
     ModifyStyle(0, WS_CLIPCHILDREN);
     m_pRC = _Renderer->CreateContext(hWnd);
+
+    if (m_pRC == nullptr)
+    {
+        m_pRC = new NullRenderContext;
+    }
 
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TETRIS));
     SetIcon(hIcon);

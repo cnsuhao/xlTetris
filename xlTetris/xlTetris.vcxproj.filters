@@ -63,6 +63,9 @@
     <ClCompile Include="D3D9Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="NullRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Languages.xml">
@@ -110,6 +113,9 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="D3D9Renderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="NullRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
