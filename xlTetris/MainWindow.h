@@ -64,7 +64,7 @@ private:
     void CreateControls();
     void SetTexts();
     void AutoSelectRenderer();
-    void ReleaseRenderContext();
+    void ReleaseRenderer();
 
 private:
     // Message Map Handlers

@@ -160,11 +160,12 @@ void MainWindow::AutoSelectRenderer()
     InvalidateRect(NULL);
 }
 
-void MainWindow::ReleaseRenderContext()
+void MainWindow::ReleaseRenderer()
 {
     if (m_iRenderer >= 0)
     {
         g_pRenderers[m_iRenderer]->ReleaseContext(m_pRC);
+        g_pRenderers[m_iRenderer]->Uninitialize();
     }
     else
     {
@@ -193,7 +194,7 @@ LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    ReleaseRenderContext();
+    ReleaseRenderer();
 
     PostQuitMessage(0);
     return FALSE;
@@ -325,7 +326,7 @@ LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl
 
 LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
 {
-    ReleaseRenderContext();
+    ReleaseRenderer();
 
     m_iRenderer = m_comboRenderer.GetCurSel();
 
