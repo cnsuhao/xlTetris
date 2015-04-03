@@ -200,8 +200,6 @@ bool Game::Render(RenderContext *pRC)
         DrawGameOver(pRC);
     }
 
-    DrawRenderEngine(pRC);
-
     return true;
 }
 
@@ -308,13 +306,6 @@ void Game::DrawGameOver(RenderContext *pRC)
     xl::String strGameover = _Language.GetString(_T("ID_GameOver"));
     RGBQUAD color = { 0x00, 0xff, 0xff, 0xff };
     pRC->DrawText(strGameover, strGameover.Length(), &m_rectGame, DT_SINGLELINE | DT_CENTER | DT_VCENTER, color);
-}
-
-void Game::DrawRenderEngine(RenderContext *pRC)
-{
-    xl::String strRenderer = _Renderer->GetName();
-    RGBQUAD color = { 0x00, 0x80, 0x80, 0x80 };
-    pRC->DrawText(strRenderer, strRenderer.Length(), &m_rectGame, DT_SINGLELINE, color);
 }
 
 bool Game::CanDown()

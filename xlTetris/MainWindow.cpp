@@ -21,19 +21,35 @@
 #include "Game.h"
 #include "resource.h"
 #include "NullRenderer.h"
+#include "GDIRenderer.h"
+#include "D3D9Renderer.h"
+#include "D2D10Renderer.h"
+#include "D2D11Renderer.h"
+
+
+Renderer *g_pRenderers[] =
+{
+    new D2D11Renderer,
+    new D2D10Renderer,
+    new D3D9Renderer,
+    new GDIRenderer,
+};
 
 enum
 {
     ID_STATIC   = -1,
     ID_NULL     = 0,
 
-    ID_BUTTEN_PAUSE,
-    ID_BUTTEN_START,
+    ID_BUTTON_PAUSE,
+    ID_BUTTON_START,
+
+    ID_COMBOBOX_RENDERER,
 
     ID_LINK_WEBSITE
 };
 
 MainWindow::MainWindow() :
+    m_iRenderer(-1),
     m_pRC(nullptr),
     m_bStarted(false),
     m_bPaused(false),
@@ -48,8 +64,9 @@ MainWindow::MainWindow() :
     AppendMsgHandler(WM_KEYDOWN,     MsgHandler(this, &MainWindow::OnKeyDown));
     AppendMsgHandler(WM_LBUTTONDOWN, MsgHandler(this, &MainWindow::OnLButtonDown));
 
-    AppendCommandMsgHandler(ID_BUTTEN_START, CommandMsgHandler(this, &MainWindow::OnButtonStart));
-    AppendCommandMsgHandler(ID_BUTTEN_PAUSE, CommandMsgHandler(this, &MainWindow::OnButtonPause));
+    AppendCommandMsgHandler(ID_BUTTON_START, CommandMsgHandler(this, &MainWindow::OnButtonStart));
+    AppendCommandMsgHandler(ID_BUTTON_PAUSE, CommandMsgHandler(this, &MainWindow::OnButtonPause));
+    AppendCommandMsgHandler(ID_COMBOBOX_RENDERER, CBN_SELCHANGE, CommandMsgHandler(this, &MainWindow::OnComboBoxRendererChange));
 
     AppendNotifyMsgHandler(ID_LINK_WEBSITE, NM_CLICK, NotifyMsgHandler(this, &MainWindow::OnLinkWebsiteClick));
 }
@@ -76,10 +93,19 @@ void MainWindow::CreateControls()
 
     m_labelScore.SetFont(m_hScoreFont);
 
-    m_buttonPause.Create(ID_BUTTEN_PAUSE, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
-    m_buttonStart.Create(ID_BUTTEN_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 68, 80, 24);
+    m_buttonPause.Create(ID_BUTTON_PAUSE, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
+    m_buttonStart.Create(ID_BUTTON_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 88, 80, 24);
 
     m_buttonPause.EnableWindow(FALSE);
+
+    m_comboRenderer.Create(ID_COMBOBOX_RENDERER, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 50, 80, 24);
+
+    for (int i = 0; i < _countof(g_pRenderers); ++i)
+    {
+        m_comboRenderer.AddString(g_pRenderers[i]->GetName());
+    }
+
+    m_comboRenderer.SetCurSel(-1);
 
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 }
@@ -108,15 +134,50 @@ void MainWindow::SetTexts()
     m_linkWebSite.SetWindowText(strText);
 }
 
-LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
+void MainWindow::AutoSelectRenderer()
 {
-    ModifyStyle(0, WS_CLIPCHILDREN);
-    m_pRC = _Renderer->CreateContext(hWnd);
+    for (int i = 0; i < _countof(g_pRenderers); ++i)
+    {
+        if (g_pRenderers[i]->Initialize())
+        {
+            m_iRenderer = i;
+            break;
+        }
+    }
+
+    if (m_iRenderer >= 0)
+    {
+        m_pRC = g_pRenderers[m_iRenderer]->CreateContext(m_hWnd);
+    }
 
     if (m_pRC == nullptr)
     {
+        m_iRenderer = -1;
         m_pRC = new NullRenderContext;
     }
+
+    m_comboRenderer.SetCurSel(m_iRenderer);
+    InvalidateRect(NULL);
+}
+
+void MainWindow::ReleaseRenderContext()
+{
+    if (m_iRenderer >= 0)
+    {
+        g_pRenderers[m_iRenderer]->ReleaseContext(m_pRC);
+    }
+    else
+    {
+        delete m_pRC;
+    }
+
+    m_iRenderer = -1;
+    m_pRC = nullptr;
+}
+
+LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
+{
+    ModifyStyle(0, WS_CLIPCHILDREN);
 
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TETRIS));
     SetIcon(hIcon);
@@ -125,12 +186,14 @@ LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
     CreateControls();
     SetTexts();
 
+    AutoSelectRenderer();
+
     return FALSE;
 }
 
 LRESULT MainWindow::OnDestroy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    _Renderer->ReleaseContext(m_pRC);
+    ReleaseRenderContext();
 
     PostQuitMessage(0);
     return FALSE;
@@ -150,6 +213,10 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_pRC->FillSolidRect(&MW_INST_RECT, color);
 
     _Game.Render(m_pRC);
+
+    xl::String strRenderer = g_pRenderers[m_iRenderer]->GetName();
+    RGBQUAD colorRender = { 0x00, 0x80, 0x80, 0x80 };
+    m_pRC->DrawText(strRenderer, strRenderer.Length(), &MW_GAME_RECT, DT_SINGLELINE, colorRender);
 
     m_pRC->EndDraw();
 
@@ -256,7 +323,30 @@ LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl
     return FALSE;
 }
 
-LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hContro, BOOL &bHandledl)
+LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
+{
+    ReleaseRenderContext();
+
+    m_iRenderer = m_comboRenderer.GetCurSel();
+
+    if (g_pRenderers[m_iRenderer]->Initialize())
+    {
+        m_pRC = g_pRenderers[m_iRenderer]->CreateContext(m_hWnd);
+    }
+
+    if (m_pRC == nullptr)
+    {
+        AutoSelectRenderer();
+    }
+    else
+    {
+        InvalidateRect(NULL);
+    }
+
+    return FALSE;
+}
+
+LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hContro, BOOL &bHandled)
 {
     ShellExecute(m_hWnd, _T("open"), _T("http://www.streamlet.org/"), NULL, NULL, SW_SHOW);
     return FALSE;

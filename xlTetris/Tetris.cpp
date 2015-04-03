@@ -20,10 +20,7 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "resource.h"
-#include "GDIRenderer.h"
-#include "D3D9Renderer.h"
-#include "D2D10Renderer.h"
-#include "D2D11Renderer.h"
+
 
 Tetris::Tetris() :
     m_hWaitableTimer(nullptr)
@@ -55,29 +52,6 @@ bool Tetris::Initialize()
         return false;
     }
 
-    Renderer *pRenderers[] =
-    {
-        new D3D9Renderer,
-        new D2D11Renderer,
-        new D2D10Renderer,
-        new GDIRenderer,
-    };
-
-    for (int i = 0; i < _countof(pRenderers); ++i)
-    {
-        if (_Renderer == nullptr)
-        {
-            if (pRenderers[i]->Initialize())
-            {
-                _Renderer = pRenderers[i];
-            }
-        }
-        else
-        {
-            delete pRenderers[i];
-        }
-    }
-
     const int nWidth = MW_WIDTH + GetSystemMetrics(SM_CXFRAME) * 2;
     const int nHeight = MW_HEIGHT + GetSystemMetrics(SM_CYFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
     const int nX = (GetSystemMetrics(SM_CXSCREEN) - nWidth) / 2;
@@ -100,8 +74,6 @@ bool Tetris::Initialize()
 
 void Tetris::Release()
 {
-    _Renderer->Uninitialize();
-
     if (m_hWaitableTimer != nullptr)
     {
         CloseHandle(m_hWaitableTimer);

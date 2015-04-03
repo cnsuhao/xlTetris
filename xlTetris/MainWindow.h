@@ -20,6 +20,7 @@
 #include <xl/Win32/GUI/xlWindow.h>
 #include <xl/Win32/GUI/xlStdButton.h>
 #include <xl/Win32/GUI/xlStdStatic.h>
+#include <xl/Win32/GUI/xlStdComboBox.h>
 #include <xl/Win32/GUI/xlStdLink.h>
 #include <xl/String/xlString.h>
 #include "Renderer.h"
@@ -50,6 +51,9 @@ private:
     xl::StdButton m_buttonPause;
     xl::StdButton m_buttonStart;
 
+    // ComboBox
+    xl::StdComboBox m_comboRenderer;
+
     // Links
     xl::StdLink m_linkWebSite;
 
@@ -59,6 +63,8 @@ private:
 private:
     void CreateControls();
     void SetTexts();
+    void AutoSelectRenderer();
+    void ReleaseRenderContext();
 
 private:
     // Message Map Handlers
@@ -77,6 +83,7 @@ private:
     // LRESULT OnCommandMessage(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
     LRESULT OnButtonStart(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
     LRESULT OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
+    LRESULT OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled);
 
 private:
     // Notify Message Handlers
@@ -99,6 +106,7 @@ public:
     void OnGameOver();
 
 private:
+    int m_iRenderer;
     RenderContext *m_pRC;
 
 private:

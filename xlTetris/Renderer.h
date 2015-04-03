@@ -45,6 +45,4 @@ struct Renderer
 #define DEFAULT_FONT_FACE    _T("Î¢ÈíÑÅºÚ")
 #define DEFAULT_FONT_SIZE   20
 
-__declspec(selectany) Renderer *_Renderer = nullptr;
-
 #endif // #ifndef __RENDERER_H_C4ECC913_B674_48BB_B902_C5B426C1041B_INCLUDED__
