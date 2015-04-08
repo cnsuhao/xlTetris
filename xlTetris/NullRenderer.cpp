@@ -27,6 +27,11 @@ void NullRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, U
 
 }
 
+void NullRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
+{
+
+}
+
 bool NullRenderContext::Initialize()
 {
     return true;

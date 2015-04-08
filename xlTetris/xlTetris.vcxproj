@@ -171,13 +171,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Languages.xml" />
-    <None Include="Tetris.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D2D10Renderer.h" />
     <ClInclude Include="D2D11Renderer.h" />
     <ClInclude Include="D3D9Renderer.h" />
-    <ClInclude Include="DXDynamic.h" />
+    <ClInclude Include="APIDynamic.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GDIRenderer.h" />
     <ClInclude Include="MainWindow.h" />
@@ -191,6 +190,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tetris.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\bg.bmp" />
+    <Image Include="Res\Tetris.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

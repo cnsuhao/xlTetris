@@ -2,9 +2,9 @@
 //
 //    Copyright (C) Streamlet. All rights reserved.
 //
-//    File Name:   D2DDynamic.h
+//    File Name:   APIDynamic.h
 //    Author:      Streamlet
-//    Create Time: 2015-03-15
+//    Create Time: 2015-04-08
 //    Description: 
 //
 //    Version history:
@@ -12,8 +12,8 @@
 //
 //--------------------------------------------------------------------
 
-#ifndef __D2DDYNAMIC_H_302A1794_EB58_4C06_BB03_63392C226FD0_INCLUDED__
-#define __D2DDYNAMIC_H_302A1794_EB58_4C06_BB03_63392C226FD0_INCLUDED__
+#ifndef __APIDYNAMIC_H_68E05CB0_2BBC_4B98_BB5D_AEF7B51C873C_INCLUDED__
+#define __APIDYNAMIC_H_68E05CB0_2BBC_4B98_BB5D_AEF7B51C873C_INCLUDED__
 
 
 #include <xl/Win32/xlDllHelper.h>
@@ -25,5 +25,7 @@
 
 #define _D3D11CreateDevice(...)     xl::DllHelper<HRESULT (WINAPI *)(IDXGIAdapter *, D3D_DRIVER_TYPE, HMODULE, UINT, D3D_FEATURE_LEVEL *, UINT, UINT, ID3D11Device **, D3D_FEATURE_LEVEL *,ID3D11DeviceContext **)>::CallFunction(_T("D3D11.dll"), "D3D11CreateDevice", __VA_ARGS__)
 
+#define _AlphaBlend(...)            xl::DllHelper<BOOL (WINAPI *)(HDC, int, int, int, int, HDC, int, int, int, int, BLENDFUNCTION)>::CallFunction(_T("MSImg32.dll"), "AlphaBlend", __VA_ARGS__);;
 
-#endif // #ifndef __D2DDYNAMIC_H_302A1794_EB58_4C06_BB03_63392C226FD0_INCLUDED__
+
+#endif // #ifndef __APIDYNAMIC_H_68E05CB0_2BBC_4B98_BB5D_AEF7B51C873C_INCLUDED__

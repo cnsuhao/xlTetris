@@ -15,7 +15,7 @@
 
 
 #include "D2D11Renderer.h"
-#include "DXDynamic.h"
+#include "APIDynamic.h"
 
 #define SAFE_RELEASE_COM_PTR(p) \
     do                          \
@@ -81,6 +81,11 @@ void D2D11RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, 
 
     D2D1_RECT_F rect = D2D1::RectF((float)lpRect->left, (float)lpRect->top, (float)lpRect->right, (float)lpRect->bottom);
     m_pDeviceContext->DrawText(lpszext, cchText, m_pTextFormat, rect, m_pSolidBrush);
+}
+
+void D2D11RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
+{
+
 }
 
 bool D2D11RenderContext::Initialize()

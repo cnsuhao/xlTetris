@@ -15,7 +15,7 @@
 
 
 #include "D3D9Renderer.h"
-#include "DXDynamic.h"
+#include "APIDynamic.h"
 #pragma comment(lib, "d3dx9.lib")
 
 
@@ -86,6 +86,11 @@ void D3D9RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, U
 {
     D3DCOLOR clr = D3DCOLOR_ARGB(color.rgbReserved, color.rgbRed, color.rgbGreen, color.rgbBlue);
     m_pFont->DrawText(NULL, lpszext, cchText, (LPRECT)lpRect, uFormat, clr);
+}
+
+void D3D9RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
+{
+
 }
 
 bool D3D9RenderContext::Initialize()

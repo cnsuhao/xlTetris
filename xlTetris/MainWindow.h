@@ -29,6 +29,7 @@ const int  MW_WIDTH         = 400;
 const int  MW_HEIGHT        = 480;
 const int  MW_GAME_WIDTH    = 240;
 const int  MW_PREVIEW_WIDTH = 120;
+const RECT MW_WINDOW_RECT     = { 0, 0, MW_WIDTH, MW_HEIGHT };
 const RECT MW_INST_RECT     = { MW_GAME_WIDTH, 0, MW_WIDTH, MW_HEIGHT };
 const RECT MW_GAME_RECT     = { 0, 0, MW_GAME_WIDTH, MW_HEIGHT };
 const int  MW_MARGIN        = (MW_WIDTH - MW_GAME_WIDTH - MW_PREVIEW_WIDTH) / 2;
@@ -59,6 +60,7 @@ private:
 
 private:
     HFONT m_hScoreFont;
+    HBITMAP m_hBackground;
 
 private:
     void CreateControls();

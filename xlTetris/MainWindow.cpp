@@ -29,10 +29,10 @@
 
 Renderer *g_pRenderers[] =
 {
+    new GDIRenderer,
     new D2D11Renderer,
     new D2D10Renderer,
     new D3D9Renderer,
-    new GDIRenderer,
 };
 
 enum
@@ -73,6 +73,11 @@ MainWindow::MainWindow() :
 
 MainWindow::~MainWindow()
 {
+    if (m_hBackground != nullptr)
+    {
+        DeleteObject(m_hBackground);
+    }
+
     if (m_hScoreFont != nullptr)
     {
         DeleteObject(m_hScoreFont);
@@ -108,6 +113,8 @@ void MainWindow::CreateControls()
     m_comboRenderer.SetCurSel(-1);
 
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
+
+    m_hBackground = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND));
 }
 
 void MainWindow::SetTexts()
@@ -213,7 +220,9 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     RGBQUAD color = { GetBValue(clr), GetGValue(clr), GetRValue(clr), 0xff };
     m_pRC->FillSolidRect(&MW_INST_RECT, color);
 
+
     _Game.Render(m_pRC);
+    m_pRC->DrawImage(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80);
 
     xl::String strRenderer = g_pRenderers[m_iRenderer]->GetName();
     RGBQUAD colorRender = { 0x00, 0x80, 0x80, 0x80 };

@@ -71,9 +71,6 @@
     <None Include="Languages.xml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Tetris.ico">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility\XmlParser.h">
@@ -109,13 +106,13 @@
     <ClInclude Include="GDIRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="DXDynamic.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="D3D9Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="NullRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="APIDynamic.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -123,5 +120,13 @@
     <ResourceCompile Include="Tetris.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\bg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\Tetris.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
