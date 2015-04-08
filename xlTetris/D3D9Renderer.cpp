@@ -16,6 +16,7 @@
 
 #include "D3D9Renderer.h"
 #include "APIDynamic.h"
+#include "resource.h"
 #pragma comment(lib, "d3dx9.lib")
 
 
@@ -33,15 +34,18 @@ struct Vertex
 {
     float x, y, z, rhw;
     DWORD color;
+    float u, v;
 
-    static const DWORD FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
+    static const DWORD FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
     Vertex()
-        : x(0), y(0), z(0), rhw(1), color(0) { }
+        : x(0), y(0), z(0), rhw(1), color(0), u(0), v(0) { }
     Vertex(float x, float y)
-        : x(x), y(y), z(0), rhw(1), color(0) { }
+        : x(x), y(y), z(0), rhw(1), color(0), u(0), v(0) { }
     Vertex(float x, float y, D3DCOLOR color)
-        : x(x), y(y), z(0), rhw(1), color(color) { }
+        : x(x), y(y), z(0), rhw(1), color(color), u(0), v(0) { }
+    Vertex(float x, float y, D3DCOLOR color, float u, float v)
+        : x(x), y(y), z(0), rhw(1), color(color), u(u), v(v) { }
 };
 
 D3D9RenderContext::D3D9RenderContext(HWND hWnd, D3D9Renderer *pRenderer) :
@@ -90,7 +94,58 @@ void D3D9RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, U
 
 void D3D9RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
 {
+    BITMAP bm = {};
+    GetObject(hBitmap, sizeof(bm), &bm);
 
+    IDirect3DTexture9 *pTexture = nullptr;
+    HRESULT hr = D3DXCreateTextureFromResource(m_pD3DDevice, GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND), &pTexture);
+
+    if (FAILED(hr) || pTexture == nullptr)
+    {
+        pTexture->Release();
+    }
+
+    /*
+      0 +----------+------> x
+        |          | 1
+        |          |
+        |          |
+      3 +----------+ 2
+        |
+        V y
+
+        +---> u
+        |
+        V v
+
+    */
+
+    float left = (float)lprcSource->left / bm.bmWidth;
+    float top = (float)lprcSource->top / bm.bmHeight;
+    float right = (float)lprcSource->right / bm.bmWidth;
+    float bottom = (float)lprcSource->bottom / bm.bmHeight;
+
+    D3DCOLOR clr = D3DCOLOR_ARGB(byAlpha, 0, 0, 0);
+
+    Vertex *vertices = NULL;
+    m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
+
+    vertices[0] = Vertex((float)lprcDest->left,  (float)lprcDest->top,    clr, left,  top);
+    vertices[1] = Vertex((float)lprcDest->right, (float)lprcDest->top,    clr, right, top);
+    vertices[2] = Vertex((float)lprcDest->right, (float)lprcDest->bottom, clr, right, bottom);
+    vertices[3] = Vertex((float)lprcDest->left,  (float)lprcDest->bottom, clr, left,  bottom);
+
+    m_pVertex->Unlock();
+
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+    m_pD3DDevice->SetTexture(0, pTexture);
+    m_pD3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
+    m_pD3DDevice->SetTexture(0, NULL);
+
+    pTexture->Release();
 }
 
 bool D3D9RenderContext::Initialize()

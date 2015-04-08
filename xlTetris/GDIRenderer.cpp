@@ -49,7 +49,7 @@ void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprc
 {
     HDC hDC = CreateCompatibleDC(m_ps.hdc);
     HBITMAP hOld = (HBITMAP)SelectObject(hDC, hBitmap);
-    BLENDFUNCTION bf = { AC_SRC_OVER, 0, byAlpha, AC_SRC_ALPHA };
+    BLENDFUNCTION bf = { AC_SRC_OVER, 0, byAlpha, 0 };
     _AlphaBlend(m_ps.hdc, lprcDest->left, lprcDest->top, lprcDest->right - lprcDest->left, lprcDest->bottom - lprcDest->top,
         hDC, lprcSource->left, lprcSource->top, lprcSource->right - lprcSource->left, lprcSource->bottom - lprcSource->top, bf);
     SelectObject(hDC, hOld);

@@ -29,10 +29,10 @@
 
 Renderer *g_pRenderers[] =
 {
+    new D3D9Renderer,
     new GDIRenderer,
     new D2D11Renderer,
     new D2D10Renderer,
-    new D3D9Renderer,
 };
 
 enum

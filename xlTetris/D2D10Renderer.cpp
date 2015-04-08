@@ -95,16 +95,16 @@ void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lp
     bmp.bmiHeader.biBitCount = 32;
     bmp.bmiHeader.biCompression = BI_RGB;
 
-    BYTE *lpBuffer = new BYTE[bm.bmWidth * bm.bmHeight * 4];
+    DWORD *lpBuffer = new DWORD[bm.bmWidth * bm.bmHeight];
     HDC hDC = GetDC(m_hWnd);
     int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
     ReleaseDC(m_hWnd, hDC);
 
     ID2D1Bitmap *pBitmap = nullptr;
     HRESULT hr = m_pRenderTarget->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight),
-        lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)), &pBitmap);
+        lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
 
-    if (pBitmap != nullptr)
+    if (SUCCEEDED(hr) && pBitmap != nullptr)
     {
         m_pRenderTarget->DrawBitmap(pBitmap, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
             byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
