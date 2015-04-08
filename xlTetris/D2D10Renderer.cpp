@@ -30,7 +30,7 @@
 D2D10RenderContext::D2D10RenderContext(HWND hWnd, D2D10Renderer *pRenderer) :
     m_hWnd(hWnd), m_pRenderer(pRenderer), m_pRenderTarget(nullptr), m_pSolidBrush(nullptr), m_pTextFormat(nullptr)
 {
-
+    ZeroMemory(&m_szLast, sizeof(m_szLast));
 }
 
 D2D10RenderContext::~D2D10RenderContext()
@@ -105,6 +105,9 @@ bool D2D10RenderContext::Initialize()
         return false;
     }
 
+    m_szLast.cx = 0;
+    m_szLast.cy = 0;
+
     return true;
 }
 
@@ -117,17 +120,15 @@ void D2D10RenderContext::Uninitialize()
 
 void D2D10RenderContext::BeginDraw()
 {
-    static int nLastWidth = 0;
-    static int nLastHeight = 0;
     RECT rc = {};
     GetClientRect(m_hWnd, &rc);
 
-    if (nLastWidth != rc.right - rc.left || nLastHeight != rc.bottom - rc.top)
+    if (m_szLast.cx != rc.right - rc.left || m_szLast.cy != rc.bottom - rc.top)
     {
-        nLastWidth = rc.right - rc.left;
-        nLastHeight = rc.bottom - rc.top;
+        m_szLast.cx = rc.right - rc.left;
+        m_szLast.cy = rc.bottom - rc.top;
 
-        m_pRenderTarget->Resize(D2D1::SizeU(nLastWidth, nLastHeight));
+        m_pRenderTarget->Resize(D2D1::SizeU(m_szLast.cx, m_szLast.cy));
     }
 
     m_pRenderTarget->BeginDraw();

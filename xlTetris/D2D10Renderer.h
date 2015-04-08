@@ -43,6 +43,7 @@ public:
 
 private:
     HWND m_hWnd;
+    SIZE m_szLast;
     D2D10Renderer *m_pRenderer;
     ID2D1HwndRenderTarget *m_pRenderTarget;
     ID2D1SolidColorBrush *m_pSolidBrush;

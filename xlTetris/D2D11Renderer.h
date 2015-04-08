@@ -44,6 +44,7 @@ public:
 
 private:
     HWND m_hWnd;
+    SIZE m_szLast;
     D2D11Renderer *m_pRenderer;
     IDXGISwapChain1 *m_pSwapChain;
     ID2D1DeviceContext *m_pDeviceContext;

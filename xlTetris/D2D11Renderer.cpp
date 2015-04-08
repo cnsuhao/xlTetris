@@ -30,6 +30,7 @@
 D2D11RenderContext::D2D11RenderContext(HWND hWnd, D2D11Renderer *pRenderer) :
     m_hWnd(hWnd), m_pRenderer(pRenderer), m_pSwapChain(nullptr), m_pDeviceContext(nullptr), m_pSolidBrush(nullptr), m_pTextFormat(nullptr)
 {
+    ZeroMemory(&m_szLast, sizeof(m_szLast));
     m_pRenderer->m_pDWriteFactory->CreateTextFormat(DEFAULT_FONT_FACE, nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, (float)DEFAULT_FONT_SIZE, _T(""), &m_pTextFormat);
 }
 
@@ -117,6 +118,9 @@ bool D2D11RenderContext::Initialize()
         return false;
     }
 
+    m_szLast.cx = 0;
+    m_szLast.cy = 0;
+
     return true;
 }
 
@@ -130,18 +134,16 @@ void D2D11RenderContext::Uninitialize()
 
 void D2D11RenderContext::BeginDraw()
 {
-    static int nLastWidth = 0;
-    static int nLastHeight = 0;
     RECT rc = {};
     GetClientRect(m_hWnd, &rc);
 
-    if (nLastWidth != rc.right - rc.left || nLastHeight != rc.bottom - rc.top)
+    if (m_szLast.cx != rc.right - rc.left || m_szLast.cy != rc.bottom - rc.top)
     {
-        nLastWidth = rc.right - rc.left;
-        nLastHeight = rc.bottom - rc.top;
+        m_szLast.cx = rc.right - rc.left;
+        m_szLast.cy = rc.bottom - rc.top;
 
         m_pDeviceContext->SetTarget(nullptr);
-        HRESULT hr = m_pSwapChain->ResizeBuffers(0, nLastWidth, nLastHeight, DXGI_FORMAT_UNKNOWN, 0);
+        HRESULT hr = m_pSwapChain->ResizeBuffers(0, m_szLast.cx, m_szLast.cy, DXGI_FORMAT_UNKNOWN, 0);
 
         if (FAILED(hr))
         {
