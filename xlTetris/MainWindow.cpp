@@ -114,7 +114,7 @@ void MainWindow::CreateControls()
 
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
-    m_hBackground = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND));
+    m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, 0);
 }
 
 void MainWindow::SetTexts()
@@ -219,7 +219,6 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     COLORREF clr = GetSysColor(COLOR_3DFACE);
     RGBQUAD color = { GetBValue(clr), GetGValue(clr), GetRValue(clr), 0xff };
     m_pRC->FillSolidRect(&MW_INST_RECT, color);
-
 
     _Game.Render(m_pRC);
     m_pRC->DrawImage(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80);

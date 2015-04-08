@@ -48,10 +48,11 @@ void GDIRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UI
 void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
 {
     HDC hDC = CreateCompatibleDC(m_ps.hdc);
-    SelectObject(hDC, hBitmap);
+    HBITMAP hOld = (HBITMAP)SelectObject(hDC, hBitmap);
     BLENDFUNCTION bf = { AC_SRC_OVER, 0, byAlpha, AC_SRC_ALPHA };
     _AlphaBlend(m_ps.hdc, lprcDest->left, lprcDest->top, lprcDest->right - lprcDest->left, lprcDest->bottom - lprcDest->top,
         hDC, lprcSource->left, lprcSource->top, lprcSource->right - lprcSource->left, lprcSource->bottom - lprcSource->top, bf);
+    SelectObject(hDC, hOld);
     DeleteDC(hDC);
 }
 

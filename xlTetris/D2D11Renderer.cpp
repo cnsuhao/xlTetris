@@ -85,7 +85,34 @@ void D2D11RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, 
 
 void D2D11RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
 {
+    BITMAP bm = {};
+    GetObject(hBitmap, sizeof(bm), &bm);
 
+    BITMAPINFO bmp = {};
+    bmp.bmiHeader.biSize = sizeof(BITMAPINFO);
+    bmp.bmiHeader.biWidth = bm.bmWidth;
+    bmp.bmiHeader.biHeight = -bm.bmHeight;
+    bmp.bmiHeader.biPlanes = 1;
+    bmp.bmiHeader.biBitCount = 32;
+    bmp.bmiHeader.biCompression = BI_RGB;
+
+    BYTE *lpBuffer = new BYTE[bm.bmWidth * bm.bmHeight * 4];
+    HDC hDC = GetDC(m_hWnd);
+    int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
+    ReleaseDC(m_hWnd, hDC);
+
+    ID2D1Bitmap *pBitmap = nullptr;
+    HRESULT hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight),
+        lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)), &pBitmap);
+
+    if (pBitmap != nullptr)
+    {
+        m_pDeviceContext->DrawBitmap(pBitmap, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
+            byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
+        pBitmap->Release();
+    }
+
+    delete[] lpBuffer;
 }
 
 bool D2D11RenderContext::Initialize()
