@@ -49,7 +49,7 @@ struct Vertex
 };
 
 D3D9RenderContext::D3D9RenderContext(HWND hWnd, D3D9Renderer *pRenderer) :
-    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pFont(nullptr)
+    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pPSGaussianBlur(nullptr), m_pPSGaussianBlurConst(nullptr), m_pFont(nullptr)
 {
     ZeroMemory(&m_Params, sizeof(m_Params));
 }
@@ -94,58 +94,60 @@ void D3D9RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, U
 
 void D3D9RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
 {
-    BITMAP bm = {};
-    GetObject(hBitmap, sizeof(bm), &bm);
+    SIZE sz = {};
+    IDirect3DTexture9 *pTexture = BitmapToTexture(hBitmap, &sz);
+    DrawImage(pTexture, sz, lprcDest, lprcSource, byAlpha, nullptr, nullptr);
+    pTexture->Release();
+}
 
-    IDirect3DTexture9 *pTexture = nullptr;
-    HRESULT hr = D3DXCreateTextureFromResource(m_pD3DDevice, GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND), &pTexture);
+void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius)
+{
+    SIZE sz = {};
+    IDirect3DTexture9 *pTexture = BitmapToTexture(hBitmap, &sz);
 
-    if (FAILED(hr) || pTexture == nullptr)
-    {
-        pTexture->Release();
-    }
+    D3DXHANDLE hTexSize = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "TexSize");
+    float fTexSize[] = { (float)sz.cx, (float)sz.cy };
+    m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTexSize, fTexSize, _countof(fTexSize));
 
-    /*
-      0 +----------+------> x
-        |          | 1
-        |          |
-        |          |
-      3 +----------+ 2
-        |
-        V y
+//     D3DXHANDLE hRadius = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "Radius");
+//     m_pPSGaussianBlurConst->SetFloat(m_pD3DDevice, hRadius, (float)byRadius);
 
-        +---> u
-        |
-        V v
+    D3DXHANDLE hPass = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "ScanPass");
+    m_pPSGaussianBlurConst->SetInt(m_pD3DDevice, hPass, 0);
 
-    */
+    IDirect3DSurface9 *pBackSurface = nullptr;
+    m_pD3DDevice->GetRenderTarget(0, &pBackSurface);
 
-    float left = (float)lprcSource->left / bm.bmWidth;
-    float top = (float)lprcSource->top / bm.bmHeight;
-    float right = (float)lprcSource->right / bm.bmWidth;
-    float bottom = (float)lprcSource->bottom / bm.bmHeight;
-
-    D3DCOLOR clr = D3DCOLOR_ARGB(byAlpha, 0, 0, 0);
-
-    Vertex *vertices = NULL;
-    m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
-
-    vertices[0] = Vertex((float)lprcDest->left,  (float)lprcDest->top,    clr, left,  top);
-    vertices[1] = Vertex((float)lprcDest->right, (float)lprcDest->top,    clr, right, top);
-    vertices[2] = Vertex((float)lprcDest->right, (float)lprcDest->bottom, clr, right, bottom);
-    vertices[3] = Vertex((float)lprcDest->left,  (float)lprcDest->bottom, clr, left,  bottom);
-
-    m_pVertex->Unlock();
-
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    m_pD3DDevice->SetTexture(0, pTexture);
-    m_pD3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
-    m_pD3DDevice->SetTexture(0, NULL);
+    IDirect3DTexture9 *pTexturePass0 = nullptr;
+    m_pD3DDevice->CreateTexture(sz.cx, sz.cy, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pTexturePass0, nullptr);
+    IDirect3DSurface9 *pSurfacePass0 = nullptr;
+    pTexturePass0->GetSurfaceLevel(0, &pSurfacePass0);
+    m_pD3DDevice->SetRenderTarget(0, pSurfacePass0);
+    DrawImage(pTexture, sz, lprcDest, lprcSource, 255, nullptr, m_pPSGaussianBlur);
 
     pTexture->Release();
+
+    IDirect3DTexture9 *pTexturePass1 = nullptr;
+    m_pD3DDevice->CreateTexture(sz.cx, sz.cy, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pTexturePass1, nullptr);
+    IDirect3DSurface9 *pSurfacePass1 = nullptr;
+    pTexturePass1->GetSurfaceLevel(0, &pSurfacePass1);
+    m_pD3DDevice->SetRenderTarget(0, pSurfacePass1);
+
+    pSurfacePass0->Release();
+
+    m_pPSGaussianBlurConst->SetInt(m_pD3DDevice, hPass, 1);
+
+    DrawImage(pTexturePass0, sz, lprcDest, lprcSource, 255, nullptr, m_pPSGaussianBlur);
+
+    pTexturePass0->Release();
+
+    m_pD3DDevice->SetRenderTarget(0, pBackSurface);
+    pSurfacePass1->Release();
+    pBackSurface->Release();
+
+    DrawImage(pTexturePass1, sz, lprcDest, lprcSource, byAlpha, nullptr, nullptr);
+
+    pTexturePass1->Release();
 }
 
 bool D3D9RenderContext::Initialize()
@@ -223,6 +225,34 @@ bool D3D9RenderContext::Initialize()
     indices[3] = 0, indices[4] = 2, indices[5] = 3;
     m_pIndex->Unlock();
 
+    LPVOID pData = NULL;
+    DWORD cbSize = GetResource(&pData, _T("HLSL"), IDR_HLSL_PS);
+
+    ID3DXBuffer *pShader = nullptr;
+    ID3DXBuffer *pError = nullptr;
+
+    hr = D3DXCompileShader((LPCSTR)pData, cbSize, nullptr, nullptr, "main", "ps_3_0", D3DXSHADER_DEBUG, &pShader, &pError, &m_pPSGaussianBlurConst);
+
+    if (pError != nullptr)
+    {
+        LPCSTR lpszError = (LPCSTR)pError->GetBufferPointer();
+        pError->Release();
+        return false;
+    }
+
+    if (FAILED(hr) || pShader == nullptr || m_pPSGaussianBlurConst == nullptr)
+    {
+        return false;
+    }
+
+    hr = m_pD3DDevice->CreatePixelShader((DWORD *)pShader->GetBufferPointer(), &m_pPSGaussianBlur);
+    pShader->Release();
+
+    if (FAILED(hr) || m_pPSGaussianBlur == nullptr)
+    {
+        return false;
+    }
+
     hr = D3DXCreateFont(m_pD3DDevice, -DEFAULT_FONT_SIZE, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE, &m_pFont);
 
     if (FAILED(hr) || m_pFont == nullptr)
@@ -236,6 +266,8 @@ bool D3D9RenderContext::Initialize()
 void D3D9RenderContext::Uninitialize()
 {
     SAFE_RELEASE_COM_PTR(m_pFont);
+    SAFE_RELEASE_COM_PTR(m_pPSGaussianBlurConst);
+    SAFE_RELEASE_COM_PTR(m_pPSGaussianBlur);
     SAFE_RELEASE_COM_PTR(m_pD3DDevice);
 }
 
@@ -269,6 +301,142 @@ void D3D9RenderContext::EndDraw()
     m_pD3DDevice->EndScene();
     m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
     ValidateRect(m_hWnd, NULL);
+}
+
+IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSize)
+{
+    BITMAP bm = {};
+    GetObject(hBitmap, sizeof(bm), &bm);
+
+    BITMAPINFO bmp = {};
+    bmp.bmiHeader.biSize = sizeof(BITMAPINFO);
+    bmp.bmiHeader.biWidth = bm.bmWidth;
+    bmp.bmiHeader.biHeight = -bm.bmHeight;
+    bmp.bmiHeader.biPlanes = 1;
+    bmp.bmiHeader.biBitCount = 32;
+    bmp.bmiHeader.biCompression = BI_RGB;
+
+    DWORD *lpBuffer = new DWORD[bm.bmWidth * bm.bmHeight];
+    HDC hDC = GetDC(m_hWnd);
+    int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
+    ReleaseDC(m_hWnd, hDC);
+
+    if (iLines == 0)
+    {
+        delete[] lpBuffer;
+        return nullptr;
+    }
+
+    IDirect3DTexture9 *pTexture = nullptr;
+    HRESULT hr = m_pD3DDevice->CreateTexture(bm.bmWidth, bm.bmHeight, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr);
+
+    if (FAILED(hr) || pTexture == nullptr)
+    {
+        delete[] lpBuffer;
+        return nullptr;
+    }
+
+    D3DLOCKED_RECT lr = {};
+    RECT rc = { 0, 0, bm.bmWidth, bm.bmHeight };
+    hr = pTexture->LockRect(0, &lr, &rc, D3DLOCK_DISCARD);
+
+    if (FAILED(hr))
+    {
+        delete[] lpBuffer;
+        pTexture->Release();
+        return nullptr;
+    }
+
+    for (int j = 0; j < bm.bmHeight; ++j)
+    {
+        DWORD *pLine = (DWORD *)((BYTE *)lr.pBits + j * lr.Pitch);
+
+        for (int i = 0; i < bm.bmWidth; ++i)
+        {
+            pLine[i] = lpBuffer[j * bm.bmWidth + i] | 0xff000000;
+        }
+    }
+
+    pTexture->UnlockRect(0);
+
+    delete[] lpBuffer;
+
+    if (pSize != nullptr)
+    {
+        pSize->cx = bm.bmWidth;
+        pSize->cy = bm.bmHeight;
+    }
+
+    return pTexture;
+}
+
+void D3D9RenderContext::DrawImage(IDirect3DTexture9 *pTexture, SIZE sz, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, IDirect3DVertexShader9 *pVS, IDirect3DPixelShader9 *pPS)
+{
+    /*
+      0 +----------+------> x
+        |          | 1
+        |          |
+        |          |
+      3 +----------+ 2
+        |
+        V y
+
+        +---> u
+        |
+        V v
+
+    */
+
+    float left = (float)lprcSource->left / sz.cx;
+    float top = (float)lprcSource->top / sz.cy;
+    float right = (float)lprcSource->right / sz.cx;
+    float bottom = (float)lprcSource->bottom / sz.cy;
+
+    D3DCOLOR clr = D3DCOLOR_ARGB(byAlpha, 0, 0, 0);
+
+    Vertex *vertices = NULL;
+    m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
+
+    vertices[0] = Vertex((float)lprcDest->left,  (float)lprcDest->top,    clr, left,  top);
+    vertices[1] = Vertex((float)lprcDest->right, (float)lprcDest->top,    clr, right, top);
+    vertices[2] = Vertex((float)lprcDest->right, (float)lprcDest->bottom, clr, right, bottom);
+    vertices[3] = Vertex((float)lprcDest->left,  (float)lprcDest->bottom, clr, left,  bottom);
+
+    m_pVertex->Unlock();
+
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+    m_pD3DDevice->SetTexture(0, pTexture);
+    m_pD3DDevice->SetVertexShader(pVS);
+    m_pD3DDevice->SetPixelShader(pPS);
+    m_pD3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
+    m_pD3DDevice->SetPixelShader(nullptr);
+    m_pD3DDevice->SetVertexShader(nullptr);
+    m_pD3DDevice->SetTexture(0, nullptr);
+}
+
+DWORD D3D9RenderContext::GetResource(LPVOID *pBuffer, LPCTSTR lpszResType, UINT nResID)
+{
+    HRSRC hRes = FindResource(GetModuleHandle(NULL), MAKEINTRESOURCE(nResID), lpszResType);
+
+    if (hRes == nullptr)
+    {
+        return 0;
+    }
+
+    DWORD cbSize = SizeofResource(GetModuleHandle(nullptr), hRes);
+    HGLOBAL hResData = LoadResource(GetModuleHandle(nullptr), hRes);
+
+    if (hResData == nullptr)
+    {
+        return 0;
+    }
+
+    *pBuffer = LockResource(hResData);
+
+    return cbSize;
 }
 
 

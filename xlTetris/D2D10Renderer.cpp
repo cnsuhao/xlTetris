@@ -104,14 +104,22 @@ void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lp
     HRESULT hr = m_pRenderTarget->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight),
         lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
 
-    if (SUCCEEDED(hr) && pBitmap != nullptr)
+    if (FAILED(hr) || pBitmap == nullptr)
     {
-        m_pRenderTarget->DrawBitmap(pBitmap, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
-            byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
-        pBitmap->Release();
+        delete[] lpBuffer;
+        return;
     }
 
     delete[] lpBuffer;
+
+    m_pRenderTarget->DrawBitmap(pBitmap, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
+        byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
+    pBitmap->Release();
+}
+
+void D2D10RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius)
+{
+    return DrawImage(hBitmap, lprcDest, lprcSource, byAlpha);
 }
 
 bool D2D10RenderContext::Initialize()

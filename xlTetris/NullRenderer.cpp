@@ -32,6 +32,11 @@ void NullRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lpr
 
 }
 
+void NullRenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius)
+{
+
+}
+
 bool NullRenderContext::Initialize()
 {
     return true;

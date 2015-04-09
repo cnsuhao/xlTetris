@@ -34,6 +34,7 @@ public:
     void FillSolidRect(LPCRECT lpRect, const RGBQUAD &color) override;
     void DrawText(LPCTSTR lpszext, int cchText, LPCRECT lplpRectrc, UINT uFormat, const RGBQUAD &color) override;
     void DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha) override;
+    void DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius) override;
 
 public:
     // RenderContext Methods
@@ -43,12 +44,19 @@ public:
     void EndDraw() override;
 
 private:
+    IDirect3DTexture9 *BitmapToTexture(HBITMAP hBitmap, SIZE *pSize);
+    void DrawImage(IDirect3DTexture9 *pTexture, SIZE sz, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, IDirect3DVertexShader9 *pVS, IDirect3DPixelShader9 *pPS);
+    DWORD GetResource(LPVOID *pBuffer, LPCTSTR lpszResType, UINT nResID);
+
+private:
     HWND m_hWnd;
     D3D9Renderer *m_pRenderer;
     D3DPRESENT_PARAMETERS m_Params;
     IDirect3DDevice9 *m_pD3DDevice;
     IDirect3DVertexBuffer9 *m_pVertex;
     IDirect3DIndexBuffer9 *m_pIndex;
+    IDirect3DPixelShader9 *m_pPSGaussianBlur;
+    ID3DXConstantTable *m_pPSGaussianBlurConst;
     ID3DXFont *m_pFont;
 };
 

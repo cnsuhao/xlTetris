@@ -114,7 +114,7 @@ void MainWindow::CreateControls()
 
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
-    m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, 0);
+    m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, 0);
 }
 
 void MainWindow::SetTexts()
@@ -221,11 +221,14 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_pRC->FillSolidRect(&MW_INST_RECT, color);
 
     _Game.Render(m_pRC);
-    m_pRC->DrawImage(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80);
+    m_pRC->DrawImageGaussianBlur(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80, 8);
 
-    xl::String strRenderer = g_pRenderers[m_iRenderer]->GetName();
-    RGBQUAD colorRender = { 0x00, 0x80, 0x80, 0x80 };
-    m_pRC->DrawText(strRenderer, strRenderer.Length(), &MW_GAME_RECT, DT_SINGLELINE, colorRender);
+    if (m_iRenderer >= 0)
+    {
+        xl::String strRenderer = g_pRenderers[m_iRenderer]->GetName();
+        RGBQUAD colorRender = { 0x00, 0x80, 0x80, 0x80 };
+        m_pRC->DrawText(strRenderer, strRenderer.Length(), &MW_GAME_RECT, DT_SINGLELINE, colorRender);
+    }
 
     m_pRC->EndDraw();
 
@@ -351,6 +354,8 @@ LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HW
     {
         InvalidateRect(NULL);
     }
+
+    SetFocus();
 
     return FALSE;
 }
