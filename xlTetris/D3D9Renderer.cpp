@@ -111,19 +111,19 @@ void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest,
     float fTexSize[] = { (float)sz.cx, (float)sz.cy };
     m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTexSize, fTexSize, _countof(fTexSize));
 
-    float *pTemptlate = new float[byRadius * 3 + 2];
+    float *pTemptlate = new float[byRadius + 2];
     // G(x) = 1/(sqrt(2*pi)*sigma) * e ^ (-x^2/(2*sigma^2))
-    double dSigma = (double)byRadius;
+    double dSigma = (double)byRadius / 3.0;
     double a = 1 / sqrt(2 * M_PI) / dSigma;
     double b = -0.5 / dSigma / dSigma;
-    for (int i = 0; i < byRadius * 3 + 1; ++i)
+    for (int i = 0; i < byRadius + 1; ++i)
     {
         pTemptlate[i] = (float)(a * pow(M_E, i * i * b));
     }
-    pTemptlate[byRadius * 3 + 1] = 0;
+    pTemptlate[byRadius + 1] = 0;
 
     D3DXHANDLE hTemplate = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "Template");
-    m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTemplate, pTemptlate, byRadius * 3 + 2);
+    m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTemplate, pTemptlate, byRadius + 2);
 
     D3DXHANDLE hPass = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "ScanPass");
     m_pPSGaussianBlurConst->SetInt(m_pD3DDevice, hPass, 0);

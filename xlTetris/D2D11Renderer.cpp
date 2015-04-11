@@ -159,7 +159,7 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
     }
 
     pEffect->SetInput(0, pBitmap);
-    pEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, (float)byRadius);
+    pEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, (float)byRadius / 3);
     pBitmap->Release();
 
     ID2D1Bitmap1 *pBitmap1 = nullptr;

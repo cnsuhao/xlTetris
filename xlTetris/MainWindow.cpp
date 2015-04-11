@@ -221,7 +221,7 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_pRC->FillSolidRect(&MW_INST_RECT, color);
 
     _Game.Render(m_pRC);
-    m_pRC->DrawImageGaussianBlur(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80, 8);
+    m_pRC->DrawImageGaussianBlur(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80, 48);
 
     if (m_iRenderer >= 0)
     {
