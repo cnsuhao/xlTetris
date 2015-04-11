@@ -241,27 +241,33 @@ bool D3D9RenderContext::Initialize()
     LPVOID pData = NULL;
     DWORD cbSize = GetResource(&pData, _T("HLSL"), IDR_HLSL_PS);
 
-    ID3DXBuffer *pShader = nullptr;
-    ID3DXBuffer *pError = nullptr;
-
-    hr = D3DXCompileShader((LPCSTR)pData, cbSize, nullptr, nullptr, "main", "ps_3_0", D3DXSHADER_DEBUG, &pShader, &pError, &m_pPSGaussianBlurConst);
-
-    if (pError != nullptr)
-    {
-        LPCSTR lpszError = (LPCSTR)pError->GetBufferPointer();
-        pError->Release();
-        return false;
-    }
-
-    if (FAILED(hr) || pShader == nullptr || m_pPSGaussianBlurConst == nullptr)
-    {
-        return false;
-    }
-
-    hr = m_pD3DDevice->CreatePixelShader((DWORD *)pShader->GetBufferPointer(), &m_pPSGaussianBlur);
-    pShader->Release();
+    hr = m_pD3DDevice->CreatePixelShader((DWORD *)pData, &m_pPSGaussianBlur);
 
     if (FAILED(hr) || m_pPSGaussianBlur == nullptr)
+    {
+        return false;
+    }
+
+    UINT uSize = 0;
+    hr = m_pPSGaussianBlur->GetFunction(nullptr, &uSize);
+
+    if (FAILED(hr) || uSize == 0)
+    {
+        return false;
+    }
+
+    BYTE *pFunction = new BYTE[uSize];
+    hr = m_pPSGaussianBlur->GetFunction(pFunction, &uSize);
+
+    if (FAILED(hr) || pFunction == nullptr)
+    {
+        return false;
+    }
+
+    hr = D3DXGetShaderConstantTable((DWORD *)pFunction, &m_pPSGaussianBlurConst);
+    delete[] pFunction;
+
+    if (FAILED(hr) || m_pPSGaussianBlurConst == nullptr)
     {
         return false;
     }

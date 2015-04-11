@@ -168,14 +168,16 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
 
     if (FAILED(hr) || pBitmap1 == nullptr)
     {
+        pEffect->Release();
         return;
     }
 
     ID2D1Image *pBackBuffer = nullptr;
     m_pDeviceContext->GetTarget(&pBackBuffer);
     m_pDeviceContext->SetTarget(pBitmap1);
+    m_pDeviceContext->Clear();
 
-    m_pDeviceContext->DrawImage(pEffect, D2D1::Point2F((float)lprcDest->left, (float)lprcDest->top),
+    m_pDeviceContext->DrawImage(pEffect, D2D1::Point2F(),
         D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
     pEffect->Release();
 

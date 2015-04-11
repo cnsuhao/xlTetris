@@ -71,6 +71,9 @@
     <None Include="Languages.xml">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Res\PixelShader.cso">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility\XmlParser.h">
