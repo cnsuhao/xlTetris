@@ -397,10 +397,10 @@ void D3D9RenderContext::DrawImage(IDirect3DTexture9 *pTexture, SIZE sz, LPCRECT 
     Vertex *vertices = NULL;
     m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
 
-    vertices[0] = Vertex((float)lprcDest->left,  (float)lprcDest->top,    clr, left,  top);
-    vertices[1] = Vertex((float)lprcDest->right, (float)lprcDest->top,    clr, right, top);
-    vertices[2] = Vertex((float)lprcDest->right, (float)lprcDest->bottom, clr, right, bottom);
-    vertices[3] = Vertex((float)lprcDest->left,  (float)lprcDest->bottom, clr, left,  bottom);
+    vertices[0] = Vertex((float)lprcDest->left,      (float)lprcDest->top,        clr, left,  top);
+    vertices[1] = Vertex((float)lprcDest->right - 1, (float)lprcDest->top,        clr, right, top);
+    vertices[2] = Vertex((float)lprcDest->right - 1, (float)lprcDest->bottom - 1, clr, right, bottom);
+    vertices[3] = Vertex((float)lprcDest->left,      (float)lprcDest->bottom - 1, clr, left,  bottom);
 
     m_pVertex->Unlock();
 
