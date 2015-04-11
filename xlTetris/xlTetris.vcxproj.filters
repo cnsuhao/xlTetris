@@ -66,6 +66,9 @@
     <ClCompile Include="NullRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="RenderUtility.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Languages.xml">
@@ -116,6 +119,9 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="APIDynamic.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUtility.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>

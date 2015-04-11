@@ -15,6 +15,7 @@
 
 #include "GDIRenderer.h"
 #include "APIDynamic.h"
+#include "RenderUtility.h"
 
 
 GDIRenderContext::GDIRenderContext(HWND hWnd) :
@@ -58,7 +59,9 @@ void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprc
 
 void GDIRenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius)
 {
-    return DrawImage(hBitmap, lprcDest, lprcSource, byAlpha);
+    HBITMAP hNew = RenderUtility::GaussianBlur(hBitmap, byRadius);
+    DrawImage(hNew, lprcDest, lprcSource, byAlpha);
+    DeleteObject(hBitmap);
 }
 
 bool GDIRenderContext::Initialize()

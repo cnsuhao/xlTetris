@@ -165,6 +165,7 @@
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NullRenderer.cpp" />
+    <ClCompile Include="RenderUtility.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Tetris.cpp" />
     <ClCompile Include="Utility\XmlParser.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Language.h" />
     <ClInclude Include="NullRenderer.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderUtility.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Tetris.h" />
@@ -210,6 +212,16 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Res\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Res\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Res\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCodeAndHex</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Res\%(Filename).asm</AssemblerOutputFile>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyCodeAndHex</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Res\%(Filename).asm</AssemblerOutputFile>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyCodeAndHex</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Res\%(Filename).asm</AssemblerOutputFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Fc"D:\Code\GitHub\xlTetris\xlTetris\Res\PixelShader.asm" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Fc"D:\Code\GitHub\xlTetris\xlTetris\Res\PixelShader.asm" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Fc"D:\Code\GitHub\xlTetris\xlTetris\Res\PixelShader.asm" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Fc"D:\Code\GitHub\xlTetris\xlTetris\Res\PixelShader.asm" %(AdditionalOptions)</AdditionalOptions>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

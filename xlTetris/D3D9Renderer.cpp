@@ -116,9 +116,15 @@ void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest,
     double dSigma = (double)byRadius / 3.0;
     double a = 1 / sqrt(2 * M_PI) / dSigma;
     double b = -0.5 / dSigma / dSigma;
+    float sum = 0;
     for (int i = 0; i < byRadius + 1; ++i)
     {
         pTemptlate[i] = (float)(a * pow(M_E, i * i * b));
+        sum += i == 0 ? pTemptlate[i] : pTemptlate[i] * 2;
+    }
+    for (int i = 0; i < byRadius + 1; ++i)
+    {
+        pTemptlate[i] /= sum;
     }
     pTemptlate[byRadius + 1] = 0;
 

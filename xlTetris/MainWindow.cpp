@@ -25,6 +25,7 @@
 #include "D3D9Renderer.h"
 #include "D2D10Renderer.h"
 #include "D2D11Renderer.h"
+#include "RenderUtility.h"
 
 
 Renderer *g_pRenderers[] =
@@ -115,6 +116,7 @@ void MainWindow::CreateControls()
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
     m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+//     RenderUtility::GaussianBlur(m_hBackground, 48);
 }
 
 void MainWindow::SetTexts()
