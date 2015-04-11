@@ -1,24 +1,34 @@
 sampler2D Texture0;
-float2 TexSize; // 纹理大小
-float Radius;   // 模糊半径
-int ScanPass;   // 扫描遍数
+float2 TexSize;                     // 纹理大小
+int ScanPass;                       // 扫描遍数
+static const int MAX_RADIUS = 50;   // 最大模糊半径
+float Template[MAX_RADIUS];         // 高斯模糊系数，传入一个半径方向上的模糊系数
 
 float4 main(float2 texCoord : TEXCOORD0) : COLOR
 {
-    const int R = 11;
-    float coef[R] =
+    float4 color = tex2D(Texture0, texCoord) * Template[0];
+    float2 coord = 0;
+    bool meetZero = false;
+    for (int i = 1; i < MAX_RADIUS; ++i)
     {
-        0.01, 0.03, 0.06, 0.1, 0.15, 0.3, 0.15, 0.1, 0.06, 0.03, 0.01
-    };
-    float4 color = 0;
-    for (int i = 0; i < R; ++i)
-    {
-        float2 coord = texCoord;
-        if (ScanPass == 0)
-            coord.x += (i - R / 2) / TexSize.x;
-        else
-            coord.y += (i - R / 2) / TexSize.y;
-        color += tex2D(Texture0, coord) * coef[i];
+        if (Template[i] != 0 && !meetZero)
+        {
+            coord = texCoord;
+            if (ScanPass == 0)
+            {
+                coord.x = texCoord.x - i / TexSize.x;
+                color += tex2D(Texture0, coord) * Template[i];
+                coord.x = texCoord.x + i / TexSize.x;
+                color += tex2D(Texture0, coord) * Template[i];
+            }
+            else
+            {
+                coord.y = texCoord.y - i / TexSize.y;
+                color += tex2D(Texture0, coord) * Template[i];
+                coord.y = texCoord.y + i / TexSize.y;
+                color += tex2D(Texture0, coord) * Template[i];
+            }
+        }
     }
     return color;
 }

@@ -138,8 +138,8 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
     ReleaseDC(m_hWnd, hDC);
 
     ID2D1Bitmap *pBitmap = nullptr;
-    HRESULT hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight),
-        lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
+    HRESULT hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), lpBuffer, bm.bmWidthBytes,
+        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
 
     if (FAILED(hr) || pBitmap == nullptr)
     {
@@ -162,9 +162,29 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
     pEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, (float)byRadius);
     pBitmap->Release();
 
+    ID2D1Bitmap1 *pBitmap1 = nullptr;
+    hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), nullptr, 0,
+        D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap1);
+
+    if (FAILED(hr) || pBitmap1 == nullptr)
+    {
+        return;
+    }
+
+    ID2D1Image *pBackBuffer = nullptr;
+    m_pDeviceContext->GetTarget(&pBackBuffer);
+    m_pDeviceContext->SetTarget(pBitmap1);
+
     m_pDeviceContext->DrawImage(pEffect, D2D1::Point2F((float)lprcDest->left, (float)lprcDest->top),
         D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
     pEffect->Release();
+
+    m_pDeviceContext->SetTarget(pBackBuffer);
+    pBackBuffer->Release();
+
+    m_pDeviceContext->DrawBitmap(pBitmap1, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
+        byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
+    pBitmap1->Release();
 }
 
 bool D2D11RenderContext::Initialize()
