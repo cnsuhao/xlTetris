@@ -327,31 +327,11 @@ IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSi
     BITMAP bm = {};
     GetObject(hBitmap, sizeof(bm), &bm);
 
-    BITMAPINFO bmp = {};
-    bmp.bmiHeader.biSize = sizeof(BITMAPINFO);
-    bmp.bmiHeader.biWidth = bm.bmWidth;
-    bmp.bmiHeader.biHeight = -bm.bmHeight;
-    bmp.bmiHeader.biPlanes = 1;
-    bmp.bmiHeader.biBitCount = 32;
-    bmp.bmiHeader.biCompression = BI_RGB;
-
-    DWORD *lpBuffer = new DWORD[bm.bmWidth * bm.bmHeight];
-    HDC hDC = GetDC(m_hWnd);
-    int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
-    ReleaseDC(m_hWnd, hDC);
-
-    if (iLines == 0)
-    {
-        delete[] lpBuffer;
-        return nullptr;
-    }
-
     IDirect3DTexture9 *pTexture = nullptr;
     HRESULT hr = m_pD3DDevice->CreateTexture(bm.bmWidth, bm.bmHeight, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr);
 
     if (FAILED(hr) || pTexture == nullptr)
     {
-        delete[] lpBuffer;
         return nullptr;
     }
 
@@ -361,7 +341,6 @@ IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSi
 
     if (FAILED(hr))
     {
-        delete[] lpBuffer;
         pTexture->Release();
         return nullptr;
     }
@@ -372,13 +351,11 @@ IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSi
 
         for (int i = 0; i < bm.bmWidth; ++i)
         {
-            pLine[i] = lpBuffer[j * bm.bmWidth + i] | 0xff000000;
+            pLine[i] = ((DWORD *)bm.bmBits)[j * bm.bmWidth + i] | 0xff000000;
         }
     }
 
     pTexture->UnlockRect(0);
-
-    delete[] lpBuffer;
 
     if (pSize != nullptr)
     {

@@ -124,30 +124,14 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
     BITMAP bm = {};
     GetObject(hBitmap, sizeof(bm), &bm);
 
-    BITMAPINFO bmp = {};
-    bmp.bmiHeader.biSize = sizeof(BITMAPINFO);
-    bmp.bmiHeader.biWidth = bm.bmWidth;
-    bmp.bmiHeader.biHeight = -bm.bmHeight;
-    bmp.bmiHeader.biPlanes = 1;
-    bmp.bmiHeader.biBitCount = 32;
-    bmp.bmiHeader.biCompression = BI_RGB;
-
-    DWORD *lpBuffer = new DWORD[bm.bmWidth * bm.bmHeight];
-    HDC hDC = GetDC(m_hWnd);
-    int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
-    ReleaseDC(m_hWnd, hDC);
-
     ID2D1Bitmap *pBitmap = nullptr;
-    HRESULT hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), lpBuffer, bm.bmWidthBytes,
+    HRESULT hr = m_pDeviceContext->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), bm.bmBits, bm.bmWidthBytes,
         D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
 
     if (FAILED(hr) || pBitmap == nullptr)
     {
-        delete[] lpBuffer;
         return;
     }
-
-    delete[] lpBuffer;
 
     ID2D1Effect *pEffect = nullptr;
     hr = m_pDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &pEffect);

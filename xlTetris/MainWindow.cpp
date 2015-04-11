@@ -29,10 +29,10 @@
 
 Renderer *g_pRenderers[] =
 {
-    new D3D9Renderer,
     new GDIRenderer,
     new D2D11Renderer,
     new D2D10Renderer,
+    new D3D9Renderer,
 };
 
 enum
@@ -114,7 +114,7 @@ void MainWindow::CreateControls()
 
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
-    m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, 0);
+    m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
 }
 
 void MainWindow::SetTexts()

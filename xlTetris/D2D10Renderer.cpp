@@ -87,30 +87,14 @@ void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lp
     BITMAP bm = {};
     GetObject(hBitmap, sizeof(bm), &bm);
 
-    BITMAPINFO bmp = {};
-    bmp.bmiHeader.biSize = sizeof(BITMAPINFO);
-    bmp.bmiHeader.biWidth = bm.bmWidth;
-    bmp.bmiHeader.biHeight = -bm.bmHeight;
-    bmp.bmiHeader.biPlanes = 1;
-    bmp.bmiHeader.biBitCount = 32;
-    bmp.bmiHeader.biCompression = BI_RGB;
-
-    DWORD *lpBuffer = new DWORD[bm.bmWidth * bm.bmHeight];
-    HDC hDC = GetDC(m_hWnd);
-    int iLines = GetDIBits(hDC, hBitmap, 0, bm.bmHeight, lpBuffer, &bmp, DIB_RGB_COLORS);
-    ReleaseDC(m_hWnd, hDC);
-
     ID2D1Bitmap *pBitmap = nullptr;
-    HRESULT hr = m_pRenderTarget->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight),
-        lpBuffer, bm.bmWidthBytes, D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
+    HRESULT hr = m_pRenderTarget->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), bm.bmBits, bm.bmWidthBytes,
+        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
 
     if (FAILED(hr) || pBitmap == nullptr)
     {
-        delete[] lpBuffer;
         return;
     }
-
-    delete[] lpBuffer;
 
     m_pRenderTarget->DrawBitmap(pBitmap, D2D1::RectF((float)lprcDest->left, (float)lprcDest->top, (float)lprcDest->right, (float)lprcDest->bottom),
         byAlpha / 255.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, D2D1::RectF((float)lprcSource->left, (float)lprcSource->top, (float)lprcSource->right, (float)lprcSource->bottom));
