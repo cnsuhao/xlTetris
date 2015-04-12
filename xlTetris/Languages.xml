@@ -25,6 +25,9 @@
         <String ID="ID_MainWindow_Button_Continue">
             <![CDATA[继续]]>
         </String>
+        <String ID="ID_MainWindow_Button_ChangeImage">
+            <![CDATA[更换图片]]>
+        </String>
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">溪流软件工作室</a>出品]]>
         </String>
@@ -57,6 +60,9 @@
         <String ID="ID_MainWindow_Button_Continue">
             <![CDATA[繼續]]>
         </String>
+        <String ID="ID_MainWindow_Button_ChangeImage">
+            <![CDATA[更換圖片]]>
+        </String>
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">溪流軟件工作室</a>出品]]>
         </String>
@@ -88,6 +94,9 @@
         </String>
         <String ID="ID_MainWindow_Button_Continue">
             <![CDATA[Continue]]>
+        </String>
+        <String ID="ID_MainWindow_Button_ChangeImage">
+            <![CDATA[Change Image]]>
         </String>
         <String ID="ID_MainWnd_Link_WebSite">
             <![CDATA[<a href="http://www.streamlet.org/">Streamlet Studio</a>]]>

@@ -43,6 +43,7 @@ enum
 
     ID_BUTTON_PAUSE,
     ID_BUTTON_START,
+    ID_BUTTON_CHANGEIMAGE,
 
     ID_COMBOBOX_RENDERER,
 
@@ -67,6 +68,7 @@ MainWindow::MainWindow() :
 
     AppendCommandMsgHandler(ID_BUTTON_START, CommandMsgHandler(this, &MainWindow::OnButtonStart));
     AppendCommandMsgHandler(ID_BUTTON_PAUSE, CommandMsgHandler(this, &MainWindow::OnButtonPause));
+    AppendCommandMsgHandler(ID_BUTTON_CHANGEIMAGE, CommandMsgHandler(this, &MainWindow::OnButtonChangeImage));
     AppendCommandMsgHandler(ID_COMBOBOX_RENDERER, CBN_SELCHANGE, CommandMsgHandler(this, &MainWindow::OnComboBoxRendererChange));
 
     AppendNotifyMsgHandler(ID_LINK_WEBSITE, NM_CLICK, NotifyMsgHandler(this, &MainWindow::OnLinkWebsiteClick));
@@ -100,11 +102,12 @@ void MainWindow::CreateControls()
     m_labelScore.SetFont(m_hScoreFont);
 
     m_buttonPause.Create(ID_BUTTON_PAUSE, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
-    m_buttonStart.Create(ID_BUTTON_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 88, 80, 24);
+    m_buttonStart.Create(ID_BUTTON_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 60, 80, 24);
 
     m_buttonPause.EnableWindow(FALSE);
 
-    m_comboRenderer.Create(ID_COMBOBOX_RENDERER, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 50, 80, 24);
+    m_buttonChangeImage.Create(ID_BUTTON_CHANGEIMAGE, this, MW_WIDTH + 20, MW_HEIGHT - 60, 80, 24);
+    m_comboRenderer.Create(ID_COMBOBOX_RENDERER, this, MW_WIDTH + 20, MW_HEIGHT - 24, 80, 24);
 
     for (int i = 0; i < _countof(g_pRenderers); ++i)
     {
@@ -116,7 +119,11 @@ void MainWindow::CreateControls()
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
     m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-//     RenderUtility::GaussianBlur(m_hBackground, 48);
+
+    BITMAP bm = {};
+    GetObject(m_hBackground, sizeof(bm), &bm);
+    m_szBackground.cx = bm.bmWidth;
+    m_szBackground.cy = bm.bmHeight;
 }
 
 void MainWindow::SetTexts()
@@ -141,6 +148,9 @@ void MainWindow::SetTexts()
 
     strText = _Language.GetString(_T("ID_MainWnd_Link_WebSite"));
     m_linkWebSite.SetWindowText(strText);
+
+    strText = _Language.GetString(_T("ID_MainWindow_Button_ChangeImage"));
+    m_buttonChangeImage.SetWindowText(strText);
 }
 
 void MainWindow::AutoSelectRenderer()
@@ -187,7 +197,7 @@ void MainWindow::ReleaseRenderer()
 
 LRESULT MainWindow::OnCreate(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    ModifyStyle(0, WS_CLIPCHILDREN);
+    ModifyStyle(0, WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_THICKFRAME);
 
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TETRIS));
     SetIcon(hIcon);
@@ -218,12 +228,19 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
     m_pRC->BeginDraw();
 
-    COLORREF clr = GetSysColor(COLOR_3DFACE);
-    RGBQUAD color = { GetBValue(clr), GetGValue(clr), GetRValue(clr), 0xff };
-    m_pRC->FillSolidRect(&MW_INST_RECT, color);
+    RECT rcClient = {};
+    GetClientRect(&rcClient);
+    RGBQUAD colorBack = { 0, 0, 0, 0 };
+    m_pRC->FillSolidRect(&rcClient, colorBack);
+
+    COLORREF clrWindow = GetSysColor(COLOR_3DFACE);
+    RGBQUAD colorWindow = { GetBValue(clrWindow), GetGValue(clrWindow), GetRValue(clrWindow), 0xff };
+    m_pRC->FillSolidRect(&MW_INST_RECT, colorWindow);
 
     _Game.Render(m_pRC);
-    m_pRC->DrawImageGaussianBlur(m_hBackground, &MW_WINDOW_RECT, &MW_WINDOW_RECT, 0x80, 8);
+
+    RECT rcImage = { 0, 0, min(rcClient.right - rcClient.left, m_szBackground.cx), min(rcClient.bottom - rcClient.top, m_szBackground.cy) };
+    m_pRC->DrawImageGaussianBlur(m_hBackground, &rcImage, &rcImage, 0x80, 48);
 
     if (m_iRenderer >= 0)
     {
@@ -253,6 +270,8 @@ LRESULT MainWindow::OnSize(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, B
     {
         Pause();
     }
+
+    InvalidateRect(NULL);
 
     return FALSE;
 }
@@ -335,6 +354,46 @@ LRESULT MainWindow::OnButtonPause(HWND hWnd, WORD wID, WORD wCode, HWND hControl
     }
 
     return FALSE;
+}
+
+LRESULT MainWindow::OnButtonChangeImage(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
+{
+    TCHAR szPath[MAX_PATH] = {};
+
+    OPENFILENAME ofn = { sizeof(OPENFILENAME) };
+    ofn.hwndOwner = m_hWnd;
+    ofn.hInstance = GetModuleHandle(nullptr);
+    ofn.lpstrFilter = _T("*.bmp\0*.bmp\0");
+    ofn.nFilterIndex = 0;
+    ofn.lpstrFile = szPath;
+    ofn.nMaxFile = _countof(szPath);
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (!GetOpenFileName(&ofn))
+    {
+        return 0;
+    }
+
+    HBITMAP hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), szPath, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+    DWORD dw = GetLastError();
+
+    BITMAP bm = {};
+    GetObject(hBitmap, sizeof(bm), &bm);
+
+    if (bm.bmBitsPixel != 32)
+    {
+        DeleteObject(hBitmap);
+        return 0;
+    }
+
+    DeleteObject(m_hBackground);
+    m_hBackground = hBitmap;
+    m_szBackground.cx = bm.bmWidth;
+    m_szBackground.cy = bm.bmHeight;
+
+    InvalidateRect(NULL);
+
+    return 0;
 }
 
 LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HWND hControl, BOOL &bHandled)
