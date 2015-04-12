@@ -52,6 +52,11 @@ HBITMAP RenderUtility::GaussianBlur(HBITMAP hBitmap, BYTE byRadius)
     for (int i = 0; i < byRadius + 1; ++i)
     {
         pTemptlate[i] /= sum;
+        if (pTemptlate[i] <= 0)
+        {
+            byRadius = (BYTE)i;
+            break;
+        }
     }
 
     BITMAP bm = {};

@@ -19,7 +19,7 @@
 
 
 GDIRenderContext::GDIRenderContext(HWND hWnd) :
-    m_hWnd(hWnd)
+    m_hWnd(hWnd), m_hFont(nullptr), m_hDC(nullptr), m_hOldBitmap(nullptr)
 {
     ZeroMemory(&m_ps, sizeof(m_ps));
 }
@@ -32,18 +32,18 @@ GDIRenderContext::~GDIRenderContext()
 void GDIRenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
 {
     COLORREF clr = RGB(color.rgbRed, color.rgbGreen, color.rgbBlue);
-    SetBkColor(m_ps.hdc, clr);
-    ExtTextOut(m_ps.hdc, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
+    SetBkColor(m_hDC, clr);
+    ExtTextOut(m_hDC, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
 }
 
 void GDIRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
 {
     RECT rc = *lpRect;
     COLORREF clr = RGB(color.rgbRed, color.rgbGreen, color.rgbBlue);
-    SetTextColor(m_ps.hdc, clr);
-    SelectObject(m_ps.hdc, m_hFont);
-    SetBkMode(m_ps.hdc, TRANSPARENT);
-    ::DrawText(m_ps.hdc, lpszext, cchText, &rc, uFormat);
+    SetTextColor(m_hDC, clr);
+    SelectObject(m_hDC, m_hFont);
+    SetBkMode(m_hDC, TRANSPARENT);
+    ::DrawText(m_hDC, lpszext, cchText, &rc, uFormat);
 }
 
 void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
@@ -51,7 +51,7 @@ void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprc
     HDC hDC = CreateCompatibleDC(m_ps.hdc);
     HBITMAP hOld = (HBITMAP)SelectObject(hDC, hBitmap);
     BLENDFUNCTION bf = { AC_SRC_OVER, 0, byAlpha, 0 };
-    _AlphaBlend(m_ps.hdc, lprcDest->left, lprcDest->top, lprcDest->right - lprcDest->left, lprcDest->bottom - lprcDest->top,
+    _AlphaBlend(m_hDC, lprcDest->left, lprcDest->top, lprcDest->right - lprcDest->left, lprcDest->bottom - lprcDest->top,
         hDC, lprcSource->left, lprcSource->top, lprcSource->right - lprcSource->left, lprcSource->bottom - lprcSource->top, bf);
     SelectObject(hDC, hOld);
     DeleteDC(hDC);
@@ -61,7 +61,7 @@ void GDIRenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, 
 {
     HBITMAP hNew = RenderUtility::GaussianBlur(hBitmap, byRadius);
     DrawImage(hNew, lprcDest, lprcSource, byAlpha);
-    DeleteObject(hBitmap);
+    DeleteObject(hNew);
 }
 
 bool GDIRenderContext::Initialize()
@@ -84,10 +84,22 @@ void GDIRenderContext::Uninitialize()
 void GDIRenderContext::BeginDraw()
 {
     BeginPaint(m_hWnd, &m_ps);
+    SIZE sz = { m_ps.rcPaint.right - m_ps.rcPaint.left, m_ps.rcPaint.bottom - m_ps.rcPaint.top };
+    m_hDC = CreateCompatibleDC(m_ps.hdc);
+    HBITMAP hBitmap = RenderUtility::CreateBitmap(sz.cx, sz.cy, nullptr);
+    m_hOldBitmap = (HBITMAP)SelectObject(m_hDC, hBitmap);
+    BitBlt(m_hDC, 0, 0, sz.cx, sz.cy, m_ps.hdc, m_ps.rcPaint.left, m_ps.rcPaint.top, SRCCOPY);
+    SetViewportOrgEx(m_hDC, -m_ps.rcPaint.left, m_ps.rcPaint.top, nullptr);
 }
 
 void GDIRenderContext::EndDraw()
 {
+    SetViewportOrgEx(m_hDC, 0, 0, nullptr);
+    SIZE sz = { m_ps.rcPaint.right - m_ps.rcPaint.left, m_ps.rcPaint.bottom - m_ps.rcPaint.top };
+    BitBlt(m_ps.hdc, m_ps.rcPaint.left, m_ps.rcPaint.top, sz.cx, sz.cy, m_hDC, 0, 0, SRCCOPY);
+    HBITMAP hBitmap = (HBITMAP)SelectObject(m_hDC, m_hOldBitmap);
+    DeleteObject(hBitmap);
+    DeleteDC(m_hDC);
     EndPaint(m_hWnd, &m_ps);
 }
 

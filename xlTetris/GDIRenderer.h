@@ -40,6 +40,8 @@ private:
     HWND m_hWnd;
     HFONT m_hFont;
     PAINTSTRUCT m_ps;
+    HDC m_hDC;
+    HBITMAP m_hOldBitmap;
 };
 
 class GDIRenderer : public Renderer

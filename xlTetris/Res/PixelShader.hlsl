@@ -21,7 +21,7 @@ float4 main(float2 texCoord : TEXCOORD0) : COLOR
         {
             for (int j = 0; j < 4; ++j)
             {
-                if (t[j] == 0)
+                if (t[j] <= 0)
                     run = false;
 
                 color += tex2D(Texture0, coord.xy) * t[j];

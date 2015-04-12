@@ -16,6 +16,7 @@
 
 #include "D2D10Renderer.h"
 #include "APIDynamic.h"
+#include "RenderUtility.h"
 
 #define SAFE_RELEASE_COM_PTR(p) \
     do                          \
@@ -103,7 +104,9 @@ void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lp
 
 void D2D10RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius)
 {
-    return DrawImage(hBitmap, lprcDest, lprcSource, byAlpha);
+    HBITMAP hNew = RenderUtility::GaussianBlur(hBitmap, byRadius);
+    DrawImage(hNew, lprcDest, lprcSource, byAlpha);
+    DeleteObject(hNew);
 }
 
 bool D2D10RenderContext::Initialize()
