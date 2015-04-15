@@ -1,9 +1,9 @@
 sampler2D Texture0;
-float2 TexSize;                                         // 纹理大小
-float ScanPass;                                         // 扫描遍数
+float2 TexSize : register(c0);                          // 纹理大小
+float ScanPass : register(c1);                          // 扫描遍数
 static const int MAX_RADIUS = 200;                      // 最大模糊半径
 static const int MAX_FLOAT4 = (MAX_RADIUS - 1) / 4 + 1;
-float4 Template[MAX_FLOAT4];                            // 高斯模糊系数，传入一个半径方向上的模糊系数
+float4 Template[MAX_FLOAT4] : register(c2);             // 高斯模糊系数，传入一个半径方向上的模糊系数
 
 float4 main(float2 texCoord : TEXCOORD0) : COLOR
 {
@@ -27,7 +27,7 @@ float4 main(float2 texCoord : TEXCOORD0) : COLOR
                 color += tex2D(Texture0, coord.xy) * t[j];
                 color += tex2D(Texture0, coord.zw) * t[j];
 
-                if (ScanPass == 0)
+                if (ScanPass < 0.5f)
                 {
                     coord.x -= scale.x;
                     coord.z += scale.x;

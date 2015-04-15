@@ -56,7 +56,6 @@ private:
     IDirect3DVertexBuffer9 *m_pVertex;
     IDirect3DIndexBuffer9 *m_pIndex;
     IDirect3DPixelShader9 *m_pPSGaussianBlur;
-    ID3DXConstantTable *m_pPSGaussianBlurConst;
     ID3DXFont *m_pFont;
 };
 

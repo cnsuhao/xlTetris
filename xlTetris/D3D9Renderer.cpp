@@ -51,7 +51,7 @@ struct Vertex
 };
 
 D3D9RenderContext::D3D9RenderContext(HWND hWnd, D3D9Renderer *pRenderer) :
-    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pPSGaussianBlur(nullptr), m_pPSGaussianBlurConst(nullptr), m_pFont(nullptr)
+    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pPSGaussianBlur(nullptr), m_pFont(nullptr)
 {
     ZeroMemory(&m_Params, sizeof(m_Params));
 }
@@ -76,7 +76,7 @@ void D3D9RenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
     */
 
     Vertex *vertices = NULL;
-    m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
+    HRESULT hr = m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
 
     vertices[0] = Vertex((float)lpRect->left,  (float)lpRect->top,    clr);
     vertices[1] = Vertex((float)lpRect->right, (float)lpRect->top,    clr);
@@ -107,11 +107,14 @@ void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest,
     SIZE sz = {};
     IDirect3DTexture9 *pTexture = BitmapToTexture(hBitmap, &sz);
 
-    D3DXHANDLE hTexSize = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "TexSize");
-    float fTexSize[] = { (float)sz.cx, (float)sz.cy };
-    m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTexSize, fTexSize, _countof(fTexSize));
+    float fTexSize[] = { (float)sz.cx, (float)sz.cy, 0.0f, 0.0f };
+    m_pD3DDevice->SetPixelShaderConstantF(0, fTexSize, 1);
 
-    float *pTemptlate = new float[byRadius + 2];
+    int nSize = byRadius + 2;
+    int nSize4 = (nSize - 1) / 4 + 1;
+    int nSizePadding = nSize4 * 4;
+    float *pTemptlate = new float[nSizePadding];
+    ZeroMemory(pTemptlate, nSizePadding * sizeof(float));
     // G(x) = 1/(sqrt(2*pi)*sigma) * e ^ (-x^2/(2*sigma^2))
     double dSigma = (double)byRadius / 3.0;
     double a = 1 / sqrt(2 * M_PI) / dSigma;
@@ -126,13 +129,11 @@ void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest,
     {
         pTemptlate[i] /= sum;
     }
-    pTemptlate[byRadius + 1] = 0;
 
-    D3DXHANDLE hTemplate = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "Template");
-    m_pPSGaussianBlurConst->SetFloatArray(m_pD3DDevice, hTemplate, pTemptlate, byRadius + 2);
+    m_pD3DDevice->SetPixelShaderConstantF(2, pTemptlate, nSize4);
 
-    D3DXHANDLE hPass = m_pPSGaussianBlurConst->GetConstantByName(nullptr, "ScanPass");
-    m_pPSGaussianBlurConst->SetInt(m_pD3DDevice, hPass, 0);
+    float fPass[] = { 0.0f };
+    m_pD3DDevice->SetPixelShaderConstantF(1, fPass, 1);
 
     IDirect3DSurface9 *pBackSurface = nullptr;
     m_pD3DDevice->GetRenderTarget(0, &pBackSurface);
@@ -154,7 +155,8 @@ void D3D9RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest,
 
     pSurfacePass0->Release();
 
-    m_pPSGaussianBlurConst->SetInt(m_pD3DDevice, hPass, 1);
+    fPass[0] = 1.0f;
+    m_pD3DDevice->SetPixelShaderConstantF(1, fPass, 1);
 
     DrawImage(pTexturePass0, sz, lprcDest, lprcSource, 255, nullptr, m_pPSGaussianBlur);
 
@@ -254,30 +256,6 @@ bool D3D9RenderContext::Initialize()
         return false;
     }
 
-    UINT uSize = 0;
-    hr = m_pPSGaussianBlur->GetFunction(nullptr, &uSize);
-
-    if (FAILED(hr) || uSize == 0)
-    {
-        return false;
-    }
-
-    BYTE *pFunction = new BYTE[uSize];
-    hr = m_pPSGaussianBlur->GetFunction(pFunction, &uSize);
-
-    if (FAILED(hr) || pFunction == nullptr)
-    {
-        return false;
-    }
-
-    hr = D3DXGetShaderConstantTable((DWORD *)pFunction, &m_pPSGaussianBlurConst);
-    delete[] pFunction;
-
-    if (FAILED(hr) || m_pPSGaussianBlurConst == nullptr)
-    {
-        return false;
-    }
-
     hr = D3DXCreateFont(m_pD3DDevice, -DEFAULT_FONT_SIZE, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE, &m_pFont);
 
     if (FAILED(hr) || m_pFont == nullptr)
@@ -291,7 +269,6 @@ bool D3D9RenderContext::Initialize()
 void D3D9RenderContext::Uninitialize()
 {
     SAFE_RELEASE_COM_PTR(m_pFont);
-    SAFE_RELEASE_COM_PTR(m_pPSGaussianBlurConst);
     SAFE_RELEASE_COM_PTR(m_pPSGaussianBlur);
     SAFE_RELEASE_COM_PTR(m_pD3DDevice);
 }

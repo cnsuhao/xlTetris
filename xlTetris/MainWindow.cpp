@@ -30,10 +30,10 @@
 
 Renderer *g_pRenderers[] =
 {
+    new D3D9Renderer,
     new GDIRenderer,
     new D2D11Renderer,
     new D2D10Renderer,
-    new D3D9Renderer,
 };
 
 enum
@@ -102,12 +102,12 @@ void MainWindow::CreateControls()
     m_labelScore.SetFont(m_hScoreFont);
 
     m_buttonPause.Create(ID_BUTTON_PAUSE, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
-    m_buttonStart.Create(ID_BUTTON_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 60, 80, 24);
+    m_buttonStart.Create(ID_BUTTON_START, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 100, 80, 24);
 
     m_buttonPause.EnableWindow(FALSE);
 
-    m_buttonChangeImage.Create(ID_BUTTON_CHANGEIMAGE, this, MW_WIDTH + 20, MW_HEIGHT - 60, 80, 24);
-    m_comboRenderer.Create(ID_COMBOBOX_RENDERER, this, MW_WIDTH + 20, MW_HEIGHT - 24, 80, 24);
+    m_buttonChangeImage.Create(ID_BUTTON_CHANGEIMAGE, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 88, 80, 24);
+    m_comboRenderer.Create(ID_COMBOBOX_RENDERER, this, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 60, 80, 24);
 
     for (int i = 0; i < _countof(g_pRenderers); ++i)
     {
