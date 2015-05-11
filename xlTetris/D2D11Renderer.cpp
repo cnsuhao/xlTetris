@@ -16,7 +16,6 @@
 
 #include "D2D11Renderer.h"
 #include "APIDynamic.h"
-#pragma comment(lib, "dxguid.lib")
 
 #define SAFE_RELEASE_COM_PTR(p) \
     do                          \
@@ -132,6 +131,9 @@ void D2D11RenderContext::DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest
     {
         return;
     }
+
+    static const GUID CLSID_D2D1GaussianBlur =
+    { 0x1feb6d69, 0x2fe6, 0x4ac9, { 0x8c, 0x58, 0x1d, 0x7f, 0x93, 0xe7, 0xa6, 0xa5 } };
 
     ID2D1Effect *pEffect = nullptr;
     hr = m_pDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &pEffect);

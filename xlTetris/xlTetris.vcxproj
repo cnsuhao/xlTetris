@@ -76,23 +76,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)D3D9Summer2004\Include;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)D3D9Summer2004\Lib\x86;$(VC_LibraryPath_x86);$(WindowsSdk_LibraryPath_x86)</LibraryPath>
+    <IncludePath>$(SolutionDir)D3D9Summer2004\;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)D3D9Summer2004\Include;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)D3D9Summer2004\Lib\x64;$(VC_LibraryPath_x64);$(WindowsSdk_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)D3D9Summer2004\;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)D3D9Summer2004\Include;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)D3D9Summer2004\Lib\x86;$(VC_LibraryPath_x86);$(WindowsSdk_LibraryPath_x86)</LibraryPath>
+    <IncludePath>$(SolutionDir)D3D9Summer2004\;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)D3D9Summer2004\Include;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)D3D9Summer2004\Lib\x64;$(VC_LibraryPath_x64);$(WindowsSdk_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)D3D9Summer2004\;$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
