@@ -21,6 +21,7 @@
 namespace RenderUtility
 {
     HBITMAP CreateBitmap(int cx, int cy, LPVOID *ppvBits);
+    void FixAlpha(HBITMAP hBitmap);
     HBITMAP GaussianBlur(HBITMAP hBitmap, BYTE byRadius);
 }
 

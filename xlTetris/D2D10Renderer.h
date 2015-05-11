@@ -32,7 +32,7 @@ public:
 public:
     // RenderMethods methods
     void FillSolidRect(LPCRECT lpRect, const RGBQUAD &color) override;
-    void DrawText(LPCTSTR lpszext, int cchText, LPCRECT lplpRectrc, UINT uFormat, const RGBQUAD &color) override;
+    void DrawText(LPCTSTR lpszText, int cchText, LPCRECT lplpRectrc, UINT uFormat, const RGBQUAD &color) override;
     void DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha) override;
     void DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius) override;
 

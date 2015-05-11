@@ -36,14 +36,14 @@ void GDIRenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
     ExtTextOut(m_hDC, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
 }
 
-void GDIRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
+void GDIRenderContext::DrawText(LPCTSTR lpszText, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
 {
     RECT rc = *lpRect;
     COLORREF clr = RGB(color.rgbRed, color.rgbGreen, color.rgbBlue);
     SetTextColor(m_hDC, clr);
     SelectObject(m_hDC, m_hFont);
     SetBkMode(m_hDC, TRANSPARENT);
-    ::DrawText(m_hDC, lpszext, cchText, &rc, uFormat);
+    ::DrawText(m_hDC, lpszText, cchText, &rc, uFormat);
 }
 
 void GDIRenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)

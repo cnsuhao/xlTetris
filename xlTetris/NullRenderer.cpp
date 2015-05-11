@@ -22,7 +22,7 @@ void NullRenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
 
 }
 
-void NullRenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
+void NullRenderContext::DrawText(LPCTSTR lpszText, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
 {
 
 }

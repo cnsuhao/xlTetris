@@ -19,7 +19,7 @@
 #include "resource.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#pragma comment(lib, "d3dx9.lib")
+#include "RenderUtility.h"
 
 
 #define SAFE_RELEASE_COM_PTR(p) \
@@ -51,7 +51,7 @@ struct Vertex
 };
 
 D3D9RenderContext::D3D9RenderContext(HWND hWnd, D3D9Renderer *pRenderer) :
-    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pPSGaussianBlur(nullptr), m_pFont(nullptr)
+    m_hWnd(hWnd), m_pRenderer(pRenderer), m_pD3DDevice(nullptr), m_pVertex(nullptr), m_pIndex(nullptr), m_pPSGaussianBlur(nullptr), m_hFont(nullptr)
 {
     ZeroMemory(&m_Params, sizeof(m_Params));
 }
@@ -88,10 +88,67 @@ void D3D9RenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
     m_pD3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
 }
 
-void D3D9RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
+void D3D9RenderContext::DrawText(LPCTSTR lpszText, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
 {
-    D3DCOLOR clr = D3DCOLOR_ARGB(color.rgbReserved, color.rgbRed, color.rgbGreen, color.rgbBlue);
-    m_pFont->DrawText(NULL, lpszext, cchText, (LPRECT)lpRect, uFormat, clr);
+    COLORREF clr = RGB(color.rgbRed, color.rgbGreen, color.rgbBlue);
+    RECT rc = *lpRect;
+    SIZE sz = { rc.right - rc.left, rc.bottom - rc.top };
+    RECT rcSource = { 0, 0, sz.cx, sz.cy };
+
+    DWORD *pBits1 = nullptr;
+    HBITMAP hBitmap1 = RenderUtility::CreateBitmap(sz.cx, sz.cy, (LPVOID *)&pBits1);
+    DWORD *pBits2 = nullptr;
+    HBITMAP hBitmap2 = RenderUtility::CreateBitmap(sz.cx, sz.cy, (LPVOID *)&pBits2);
+
+    HDC hDC = GetDC(m_hWnd);
+    HDC hDCMemory = CreateCompatibleDC(hDC);
+    ReleaseDC(m_hWnd, hDC);
+
+    SetTextColor(hDCMemory, clr);
+    SelectObject(hDCMemory, m_hFont);
+
+    SelectObject(hDCMemory, hBitmap1);
+    SetBkMode(hDCMemory, OPAQUE);
+    SetBkColor(hDCMemory, RGB(0, 0, 0));
+    ExtTextOut(hDCMemory, 0, 0, ETO_OPAQUE, &rcSource, NULL, 0, NULL);
+    SetBkMode(hDCMemory, TRANSPARENT);
+    ::DrawText(hDCMemory, lpszText, cchText, &rc, uFormat);
+
+    SelectObject(hDCMemory, hBitmap2);
+    SetBkMode(hDCMemory, OPAQUE);
+    SetBkColor(hDCMemory, RGB(0xff, 0xff, 0xff));
+    ExtTextOut(hDCMemory, 0, 0, ETO_OPAQUE, &rcSource, NULL, 0, NULL);
+    SetBkMode(hDCMemory, TRANSPARENT);
+    ::DrawText(hDCMemory, lpszText, cchText, &rc, uFormat);
+    DeleteDC(hDCMemory);
+
+    for (int i = 0; i < sz.cx * sz.cy; ++i)
+    {
+        if (pBits1[i] == pBits2[i])
+        {
+            pBits1[i] |= 0xff000000;
+        }
+        else if (pBits1[i] != 0 && pBits2[i] != 0xffffff)
+        {
+            RGBQUAD *pArgb1 = (RGBQUAD *)&pBits1[i];
+            RGBQUAD *pArgb2 = (RGBQUAD *)&pBits2[i];
+            BYTE ar = 0xff - (pArgb2->rgbRed - pArgb1->rgbRed);
+            BYTE ag = 0xff - (pArgb2->rgbGreen - pArgb1->rgbGreen);
+            BYTE ab = 0xff - (pArgb2->rgbBlue - pArgb1->rgbBlue);
+            pArgb1->rgbReserved = (ar + ag + ab) / 3;
+        }
+        else
+        {
+            pBits1[i] = 0x00000000;
+        }
+    }
+
+    IDirect3DTexture9 *pTexture = BitmapToTexture(hBitmap1, &sz);
+    DeleteObject(hBitmap1);
+    DeleteObject(hBitmap2);
+
+    DrawImage(pTexture, sz, lpRect, &rcSource, color.rgbReserved, nullptr, nullptr);
+    pTexture->Release();
 }
 
 void D3D9RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
@@ -256,9 +313,9 @@ bool D3D9RenderContext::Initialize()
         return false;
     }
 
-    hr = D3DXCreateFont(m_pD3DDevice, -DEFAULT_FONT_SIZE, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE, &m_pFont);
+    m_hFont = CreateFont(-DEFAULT_FONT_SIZE, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE);
 
-    if (FAILED(hr) || m_pFont == nullptr)
+    if (m_hFont == nullptr)
     {
         return false;
     }
@@ -268,7 +325,7 @@ bool D3D9RenderContext::Initialize()
 
 void D3D9RenderContext::Uninitialize()
 {
-    SAFE_RELEASE_COM_PTR(m_pFont);
+    DeleteObject(m_hFont);
     SAFE_RELEASE_COM_PTR(m_pPSGaussianBlur);
     SAFE_RELEASE_COM_PTR(m_pD3DDevice);
 }
@@ -334,7 +391,7 @@ IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSi
 
         for (int i = 0; i < bm.bmWidth; ++i)
         {
-            pLine[i] = ((DWORD *)bm.bmBits)[j * bm.bmWidth + i] | 0xff000000;
+            pLine[i] = ((DWORD *)bm.bmBits)[j * bm.bmWidth + i];
         }
     }
 
@@ -368,25 +425,26 @@ void D3D9RenderContext::DrawImage(IDirect3DTexture9 *pTexture, SIZE sz, LPCRECT 
 
     float left = (float)lprcSource->left / sz.cx;
     float top = (float)lprcSource->top / sz.cy;
-    float right = (float)lprcSource->right / sz.cx;
-    float bottom = (float)lprcSource->bottom / sz.cy;
+    float right = (float)(lprcSource->right + 1) / sz.cx;
+    float bottom = (float)(lprcSource->bottom + 1) / sz.cy;
 
     D3DCOLOR clr = D3DCOLOR_ARGB(byAlpha, 0, 0, 0);
 
     Vertex *vertices = NULL;
     m_pVertex->Lock(0, 0, (LPVOID *)&vertices, D3DLOCK_DISCARD);
 
-    vertices[0] = Vertex((float)lprcDest->left,      (float)lprcDest->top,        clr, left,  top);
-    vertices[1] = Vertex((float)lprcDest->right - 1, (float)lprcDest->top,        clr, right, top);
-    vertices[2] = Vertex((float)lprcDest->right - 1, (float)lprcDest->bottom - 1, clr, right, bottom);
-    vertices[3] = Vertex((float)lprcDest->left,      (float)lprcDest->bottom - 1, clr, left,  bottom);
+    vertices[0] = Vertex((float)lprcDest->left,  (float)lprcDest->top,    clr, left,  top);
+    vertices[1] = Vertex((float)lprcDest->right, (float)lprcDest->top,    clr, right, top);
+    vertices[2] = Vertex((float)lprcDest->right, (float)lprcDest->bottom, clr, right, bottom);
+    vertices[3] = Vertex((float)lprcDest->left,  (float)lprcDest->bottom, clr, left,  bottom);
 
     m_pVertex->Unlock();
 
     m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
     m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
     m_pD3DDevice->SetTexture(0, pTexture);
     m_pD3DDevice->SetVertexShader(pVS);
     m_pD3DDevice->SetPixelShader(pPS);

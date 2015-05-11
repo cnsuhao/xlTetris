@@ -22,7 +22,7 @@
 struct RenderMethods
 {
     virtual void FillSolidRect(LPCRECT lpRect, const RGBQUAD &color) = 0;
-    virtual void DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color) = 0;
+    virtual void DrawText(LPCTSTR lpszText, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color) = 0;
     virtual void DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha) = 0;
     virtual void DrawImageGaussianBlur(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, BYTE byRadius) = 0;
 };

@@ -36,6 +36,18 @@ HBITMAP RenderUtility::CreateBitmap(int cx, int cy, LPVOID *ppvBits)
     return hBitmap;
 }
 
+void RenderUtility::FixAlpha(HBITMAP hBitmap)
+{
+    BITMAP bm = {};
+    GetObject(hBitmap, sizeof(bm), &bm);
+    RGBQUAD *p = (RGBQUAD *)bm.bmBits;
+
+    for (int i = 0; i < bm.bmWidth * bm.bmHeight; ++i)
+    {
+        p[i].rgbReserved = 0xff;
+    }
+}
+
 HBITMAP RenderUtility::GaussianBlur(HBITMAP hBitmap, BYTE byRadius)
 {
     double *pTemptlate = new double[byRadius + 1];

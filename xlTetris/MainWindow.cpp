@@ -119,6 +119,7 @@ void MainWindow::CreateControls()
     m_linkWebSite.Create(ID_LINK_WEBSITE, this, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
 
     m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+    RenderUtility::FixAlpha(m_hBackground);
 
     BITMAP bm = {};
     GetObject(m_hBackground, sizeof(bm), &bm);
@@ -375,7 +376,6 @@ LRESULT MainWindow::OnButtonChangeImage(HWND hWnd, WORD wID, WORD wCode, HWND hC
     }
 
     HBITMAP hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), szPath, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
-    DWORD dw = GetLastError();
 
     BITMAP bm = {};
     GetObject(hBitmap, sizeof(bm), &bm);
@@ -385,6 +385,8 @@ LRESULT MainWindow::OnButtonChangeImage(HWND hWnd, WORD wID, WORD wCode, HWND hC
         DeleteObject(hBitmap);
         return 0;
     }
+
+    RenderUtility::FixAlpha(hBitmap);
 
     DeleteObject(m_hBackground);
     m_hBackground = hBitmap;
@@ -423,6 +425,25 @@ LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HW
 
 LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hContro, BOOL &bHandled)
 {
+    m_pRC->BeginDraw();
+    RECT rc = { 0, 0, 100, 100 };
+    RGBQUAD rgb = { 0xff, 0, 0, 0xff };
+
+    DWORD dwStart = GetTickCount();
+    for (int i = 0; i < 100000; ++i)
+    {
+        m_pRC->FillSolidRect(&rc, rgb);
+    }
+    DWORD dwEnd = GetTickCount();
+
+    m_pRC->EndDraw();
+
+    DWORD dwTime = dwEnd - dwStart;
+    TCHAR sz[100] = {};
+    _stprintf_s(sz, L"%u", dwTime);
+    MessageBox(sz, 0, 0);
+    return  0;
+
     ShellExecute(m_hWnd, _T("open"), _T("http://www.streamlet.org/"), NULL, NULL, SW_SHOW);
     return FALSE;
 }

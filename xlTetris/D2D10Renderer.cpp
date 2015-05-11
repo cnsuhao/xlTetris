@@ -48,7 +48,7 @@ void D2D10RenderContext::FillSolidRect(LPCRECT lpRect, const RGBQUAD &color)
     m_pRenderTarget->FillRectangle(rect, m_pSolidBrush);
 }
 
-void D2D10RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
+void D2D10RenderContext::DrawText(LPCTSTR lpszText, int cchText, LPCRECT lpRect, UINT uFormat, const RGBQUAD &color)
 {
     D2D1_COLOR_F clr = D2D1::ColorF(color.rgbRed / 255.0f, color.rgbGreen / 255.0f, color.rgbBlue / 255.0f, color.rgbReserved / 255.0f);
     m_pSolidBrush->SetColor(clr);
@@ -80,7 +80,7 @@ void D2D10RenderContext::DrawText(LPCTSTR lpszext, int cchText, LPCRECT lpRect, 
     }
 
     D2D1_RECT_F rect = D2D1::RectF((float)lpRect->left, (float)lpRect->top, (float)lpRect->right, (float)lpRect->bottom);
-    m_pRenderTarget->DrawText(lpszext, cchText, m_pTextFormat, rect, m_pSolidBrush);
+    m_pRenderTarget->DrawText(lpszText, cchText, m_pTextFormat, rect, m_pSolidBrush);
 }
 
 void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha)
@@ -90,7 +90,7 @@ void D2D10RenderContext::DrawImage(HBITMAP hBitmap, LPCRECT lprcDest, LPCRECT lp
 
     ID2D1Bitmap *pBitmap = nullptr;
     HRESULT hr = m_pRenderTarget->CreateBitmap(D2D1::SizeU(bm.bmWidth, bm.bmHeight), bm.bmBits, bm.bmWidthBytes,
-        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)), &pBitmap);
+        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)), &pBitmap);
 
     if (FAILED(hr) || pBitmap == nullptr)
     {
