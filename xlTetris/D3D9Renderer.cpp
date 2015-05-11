@@ -274,14 +274,76 @@ bool D3D9RenderContext::Initialize()
         }
     }
 
-    HRESULT hr = m_pRenderer->m_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &m_Params, &m_pD3DDevice);
+    HRESULT hr = m_pRenderer->m_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_Params, &m_pD3DDevice);
 
     if (FAILED(hr) || m_pD3DDevice == nullptr)
     {
         return false;
     }
 
-    hr = m_pD3DDevice->CreateVertexBuffer(4 * sizeof(Vertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, Vertex::FVF, D3DPOOL_DEFAULT, &m_pVertex, NULL);
+    m_hFont = CreateFont(-DEFAULT_FONT_SIZE, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE);
+
+    if (m_hFont == nullptr)
+    {
+        return false;
+    }
+
+    if (!CreateDeviceRelatedResources())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void D3D9RenderContext::Uninitialize()
+{
+    DestroyDeviceRelatedResources();
+
+    DeleteObject(m_hFont);
+    SAFE_RELEASE_COM_PTR(m_pD3DDevice);
+}
+
+void D3D9RenderContext::BeginDraw()
+{
+    RECT rc = {};
+    GetClientRect(m_hWnd, &rc);
+
+    if (m_Params.BackBufferWidth != rc.right - rc.left || m_Params.BackBufferHeight != rc.bottom - rc.top)
+    {
+        m_Params.BackBufferWidth = rc.right - rc.left;
+        m_Params.BackBufferHeight = rc.bottom - rc.top;
+
+        DestroyDeviceRelatedResources();
+
+        HRESULT hr = m_pD3DDevice->Reset(&m_Params);
+        hr = D3DERR_INVALIDCALL;
+
+        CreateDeviceRelatedResources();
+    }
+
+    m_pD3DDevice->BeginScene();
+    m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
+
+    m_pD3DDevice->SetFVF(Vertex::FVF);
+    m_pD3DDevice->SetStreamSource(0, m_pVertex, 0, sizeof(Vertex));
+    m_pD3DDevice->SetIndices(m_pIndex);
+    m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+}
+
+void D3D9RenderContext::EndDraw()
+{
+    m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    m_pD3DDevice->EndScene();
+    m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+    ValidateRect(m_hWnd, NULL);
+}
+
+bool D3D9RenderContext::CreateDeviceRelatedResources()
+{
+    HRESULT hr = m_pD3DDevice->CreateVertexBuffer(4 * sizeof(Vertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, Vertex::FVF, D3DPOOL_DEFAULT, &m_pVertex, NULL);
 
     if (FAILED(hr) || m_pVertex == nullptr)
     {
@@ -313,53 +375,14 @@ bool D3D9RenderContext::Initialize()
         return false;
     }
 
-    m_hFont = CreateFont(-DEFAULT_FONT_SIZE, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, DEFAULT_FONT_FACE);
-
-    if (m_hFont == nullptr)
-    {
-        return false;
-    }
-
     return true;
 }
 
-void D3D9RenderContext::Uninitialize()
+void D3D9RenderContext::DestroyDeviceRelatedResources()
 {
-    DeleteObject(m_hFont);
     SAFE_RELEASE_COM_PTR(m_pPSGaussianBlur);
-    SAFE_RELEASE_COM_PTR(m_pD3DDevice);
-}
-
-void D3D9RenderContext::BeginDraw()
-{
-    RECT rc = {};
-    GetClientRect(m_hWnd, &rc);
-
-    if (m_Params.BackBufferWidth != rc.right - rc.left || m_Params.BackBufferHeight != rc.bottom - rc.top)
-    {
-        m_Params.BackBufferWidth = rc.right - rc.left;
-        m_Params.BackBufferHeight = rc.bottom - rc.top;
-
-        m_pD3DDevice->Reset(&m_Params);
-    }
-
-    m_pD3DDevice->BeginScene();
-    m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
-
-    m_pD3DDevice->SetFVF(Vertex::FVF);
-    m_pD3DDevice->SetStreamSource(0, m_pVertex, 0, sizeof(Vertex));
-    m_pD3DDevice->SetIndices(m_pIndex);
-    m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-    m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-    m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-}
-
-void D3D9RenderContext::EndDraw()
-{
-    m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    m_pD3DDevice->EndScene();
-    m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
-    ValidateRect(m_hWnd, NULL);
+    SAFE_RELEASE_COM_PTR(m_pIndex);
+    SAFE_RELEASE_COM_PTR(m_pVertex);
 }
 
 IDirect3DTexture9 *D3D9RenderContext::BitmapToTexture(HBITMAP hBitmap, SIZE *pSize)

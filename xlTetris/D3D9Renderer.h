@@ -44,6 +44,8 @@ public:
     void EndDraw() override;
 
 private:
+    bool CreateDeviceRelatedResources();
+    void DestroyDeviceRelatedResources();
     IDirect3DTexture9 *BitmapToTexture(HBITMAP hBitmap, SIZE *pSize);
     void DrawImage(IDirect3DTexture9 *pTexture, SIZE sz, LPCRECT lprcDest, LPCRECT lprcSource, BYTE byAlpha, IDirect3DVertexShader9 *pVS, IDirect3DPixelShader9 *pPS);
     DWORD GetResource(LPVOID *pBuffer, LPCTSTR lpszResType, UINT nResID);
