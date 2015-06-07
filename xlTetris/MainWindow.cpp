@@ -425,25 +425,6 @@ LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HW
 
 LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hContro, BOOL &bHandled)
 {
-    m_pRC->BeginDraw();
-    RECT rc = { 0, 0, 100, 100 };
-    RGBQUAD rgb = { 0xff, 0, 0, 0xff };
-
-    DWORD dwStart = GetTickCount();
-    for (int i = 0; i < 100000; ++i)
-    {
-        m_pRC->FillSolidRect(&rc, rgb);
-    }
-    DWORD dwEnd = GetTickCount();
-
-    m_pRC->EndDraw();
-
-    DWORD dwTime = dwEnd - dwStart;
-    TCHAR sz[100] = {};
-    _stprintf_s(sz, L"%u", dwTime);
-    MessageBox(sz, 0, 0);
-    return  0;
-
     ShellExecute(m_hWnd, _T("open"), _T("http://www.streamlet.org/"), NULL, NULL, SW_SHOW);
     return FALSE;
 }
