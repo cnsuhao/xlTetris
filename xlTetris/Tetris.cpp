@@ -57,9 +57,9 @@ bool Tetris::Initialize()
     const int nX = (GetSystemMetrics(SM_CXSCREEN) - nWidth) / 2;
     const int nY = (GetSystemMetrics(SM_CYSCREEN) - nHeight) / 2;
 
-    _MainWindow.Create(nX, nY, nWidth, nHeight);
+    _MainWindow.Create(nullptr, nX, nY, nWidth, nHeight, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
 
-    if (!_Game.Initialize(_MainWindow.GetHWND(),
+    if (!_Game.Initialize(_MainWindow,
                           &MW_GAME_RECT,
                           &MW_PREVIEW_RECT,
                           FN_AddScore(&_MainWindow, &MainWindow::OnAddScore),
@@ -83,7 +83,7 @@ void Tetris::Release()
 
 void Tetris::Run()
 {
-    _MainWindow.ShowWindow(SW_SHOW);
+    ShowWindow(_MainWindow, SW_SHOW);
     
     LARGE_INTEGER li = {};
     li.QuadPart = -1i64;
