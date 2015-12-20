@@ -14,8 +14,8 @@
 //------------------------------------------------------------------------------
 
 
-#include <xl/String/xlEncoding.h>
-#include <Loki/ScopeGuard.h>
+#include <xl/Common/String/xlEncoding.h>
+#include <xl/Common/Meta/xlScopeExit.h>
 #include "Utility/XmlParser.h"
 #include "Language.h"
 #include <tchar.h>
@@ -40,7 +40,7 @@ bool Language::Initialize(LPCTSTR lpszXmlFile)
         return false;
     }
 
-    LOKI_ON_BLOCK_EXIT(CloseHandle, hFile);
+    XL_ON_BLOCK_EXIT(CloseHandle, hFile);
 
     LARGE_INTEGER li = {};
 

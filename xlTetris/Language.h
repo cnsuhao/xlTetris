@@ -18,9 +18,9 @@
 
 
 #include <Windows.h>
-#include <xl/Containers/xlArray.h>
-#include <xl/Containers/xlMap.h>
-#include <xl/String/xlString.h>
+#include <xl/Common/Containers/xlArray.h>
+#include <xl/Common/Containers/xlMap.h>
+#include <xl/Common/String/xlString.h>
 
 class Language
 {

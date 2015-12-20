@@ -16,7 +16,7 @@
 
 #include "MainWindow.h"
 #include "Language.h"
-#include <xl/String/xlString.h>
+#include <xl/Common/String/xlString.h>
 #include <ShellAPI.h>
 #include "Game.h"
 #include "resource.h"
@@ -104,7 +104,7 @@ void MainWindow::CreateControls()
     m_buttonPause.Create(m_hWnd, ID_BUTTON_PAUSE, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
     m_buttonStart.Create(m_hWnd, ID_BUTTON_START, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 100, 80, 24);
 
-    EnableWindow(m_buttonPause, FALSE);
+    m_buttonPause.EnableWindow(FALSE);
 
     m_buttonChangeImage.Create(m_hWnd, ID_BUTTON_CHANGEIMAGE, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 88, 80, 24);
     m_comboRenderer    .Create(m_hWnd, ID_COMBOBOX_RENDERER, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 60, 80, 24);
@@ -132,26 +132,26 @@ void MainWindow::SetTexts()
     xl::String strText;
 
     strText = _Language.GetString(_T("ID_MainWindow_Caption"));
-    SetWindowText(m_hWnd, strText);
+    SetWindowText(strText);
 
     strText = _Language.GetString(_T("ID_MainWindow_Lable_Score"));
-    SetWindowText(m_labelScoreInst, strText);
+    m_labelScoreInst.SetWindowText(strText);
 
-    SetWindowText(m_labelScore, _T("0"));
+    m_labelScore.SetWindowText(_T("0"));
 
     m_strPause = _Language.GetString(_T("ID_MainWindow_Button_Pause"));
-    SetWindowText(m_buttonPause, m_strPause);
+    m_buttonPause.SetWindowText(m_strPause);
     m_strContinue = _Language.GetString(_T("ID_MainWindow_Button_Continue"));
 
     m_strStart = _Language.GetString(_T("ID_MainWindow_Button_Start"));
-    SetWindowText(m_buttonStart, m_strStart);
+    m_buttonStart.SetWindowText(m_strStart);
     m_strStop = _Language.GetString(_T("ID_MainWindow_Button_Stop"));
 
     strText = _Language.GetString(_T("ID_MainWnd_Link_WebSite"));
-    SetWindowText(m_linkWebSite, strText);
+    m_linkWebSite.SetWindowText(strText);
 
     strText = _Language.GetString(_T("ID_MainWindow_Button_ChangeImage"));
-    SetWindowText(m_buttonChangeImage, strText);
+    m_buttonChangeImage.SetWindowText(strText);
 }
 
 void MainWindow::AutoSelectRenderer()
@@ -177,7 +177,7 @@ void MainWindow::AutoSelectRenderer()
     }
 
     m_comboRenderer.SetCurSel(m_iRenderer);
-    InvalidateRect(m_hWnd, NULL, TRUE);
+    InvalidateRect(NULL, TRUE);
 }
 
 void MainWindow::ReleaseRenderer()
@@ -230,7 +230,7 @@ LRESULT MainWindow::OnPaint(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_pRC->BeginDraw();
 
     RECT rcClient = {};
-    GetClientRect(m_hWnd, &rcClient);
+    GetClientRect(&rcClient);
     RGBQUAD colorBack = { 0, 0, 0, 0 };
     m_pRC->FillSolidRect(&rcClient, colorBack);
 
@@ -272,7 +272,7 @@ LRESULT MainWindow::OnSize(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, B
         Pause();
     }
 
-    InvalidateRect(m_hWnd, NULL, TRUE);
+    InvalidateRect(NULL, TRUE);
 
     return FALSE;
 }
@@ -325,7 +325,7 @@ LRESULT MainWindow::OnKeyDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 LRESULT MainWindow::OnLButtonDown(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-    SetFocus(m_hWnd);
+    SetFocus();
     return FALSE;
 }
 
@@ -393,7 +393,7 @@ LRESULT MainWindow::OnButtonChangeImage(HWND hWnd, WORD wID, WORD wCode, HWND hC
     m_szBackground.cx = bm.bmWidth;
     m_szBackground.cy = bm.bmHeight;
 
-    InvalidateRect(m_hWnd, NULL, TRUE);
+    InvalidateRect(NULL, TRUE);
 
     return 0;
 }
@@ -415,10 +415,10 @@ LRESULT MainWindow::OnComboBoxRendererChange(HWND hWnd, WORD wID, WORD wCode, HW
     }
     else
     {
-        InvalidateRect(m_hWnd, NULL, TRUE);
+        InvalidateRect(NULL, TRUE);
     }
 
-    SetFocus(m_hWnd);
+    SetFocus();
 
     return FALSE;
 }
@@ -431,17 +431,17 @@ LRESULT MainWindow::OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND
 
 void MainWindow::Start()
 {
-    SetWindowText(m_buttonStart, m_strStop);
+    m_buttonStart.SetWindowText(m_strStop);
 
-    SetWindowText(m_buttonPause, m_strPause);
-    EnableWindow(m_buttonPause, TRUE);
+    m_buttonPause.SetWindowText(m_strPause);
+    m_buttonPause.EnableWindow(TRUE);
 
     m_nScore = 0;
     UpdateScore();
 
     m_bPaused = false;
     m_bStarted = true;
-    SetFocus(m_hWnd);
+    SetFocus();
     _Game.Start();
 }
 
@@ -450,10 +450,10 @@ void MainWindow::Stop()
     _Game.Stop();
     m_bStarted = false;
 
-    EnableWindow(m_buttonPause, FALSE);
-    SetWindowText(m_buttonPause, m_strPause);
+    m_buttonPause.EnableWindow(FALSE);
+    m_buttonPause.SetWindowText(m_strPause);
 
-    SetWindowText(m_buttonStart, m_strStart);
+    m_buttonStart.SetWindowText(m_strStart);
 }
 
 void MainWindow::Pause()
@@ -461,15 +461,15 @@ void MainWindow::Pause()
     _Game.Pause();
     m_bPaused = true;
 
-    SetWindowText(m_buttonPause, m_strContinue);
+    m_buttonPause.SetWindowText(m_strContinue);
 }
 
 void MainWindow::Continue()
 {
-    SetWindowText(m_buttonPause, m_strPause);
+    m_buttonPause.SetWindowText(m_strPause);
 
     m_bPaused = false;
-    SetFocus(m_hWnd);
+    SetFocus();
     _Game.Continue();
 }
 
@@ -478,7 +478,7 @@ void MainWindow::UpdateScore()
     TCHAR szScore[MAX_PATH] = {};
     _stprintf_s(szScore, _T("%d"), m_nScore);
 
-    SetWindowText(m_labelScore, szScore);
+    m_labelScore.SetWindowText(szScore);
 }
 
 void MainWindow::OnAddScore(int nScore)

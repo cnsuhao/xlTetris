@@ -16,7 +16,7 @@
 #define __D2D10RENDER_H_4A811EE0_5DA9_4BCC_A4D1_B04406312E6C_INCLUDED__
 
 
-#include <xl/Win32/Memory/xlSafeSmartPtr.h>
+#include <xl/Windows/Memory/xlSafeSmartPtr.h>
 #include "Renderer.h"
 #include <d2d1.h>
 #include <dwrite.h>

@@ -17,12 +17,12 @@
 #define __MAINWINDOW_H_7F2C24AC_2578_4C0F_9566_3D4705B7DD9A_INCLUDED__
 
 
-#include <xl/Win32/GUI/xlWindow.h>
-#include <xl/Win32/GUI/xlStdButton.h>
-#include <xl/Win32/GUI/xlStdStatic.h>
-#include <xl/Win32/GUI/xlStdComboBox.h>
-#include <xl/Win32/GUI/xlStdLink.h>
-#include <xl/String/xlString.h>
+#include <xl/Windows/GUI/xlWindow.h>
+#include <xl/Windows/GUI/xlStdButton.h>
+#include <xl/Windows/GUI/xlStdStatic.h>
+#include <xl/Windows/GUI/xlStdComboBox.h>
+#include <xl/Windows/GUI/xlStdLink.h>
+#include <xl/Common/String/xlString.h>
 #include "Renderer.h"
 
 const int  MW_WIDTH         = 400;
@@ -34,7 +34,7 @@ const RECT MW_GAME_RECT     = { 0, 0, MW_GAME_WIDTH, MW_HEIGHT };
 const int  MW_MARGIN        = (MW_WIDTH - MW_GAME_WIDTH - MW_PREVIEW_WIDTH) / 2;
 const RECT MW_PREVIEW_RECT  = { MW_GAME_WIDTH + MW_MARGIN, MW_MARGIN, MW_WIDTH - MW_MARGIN,MW_MARGIN + MW_PREVIEW_WIDTH };
 
-class MainWindow : public xl::Window
+class MainWindow : public xl::Windows::Window
 {
 public:
     MainWindow();
@@ -44,19 +44,19 @@ private:
     // Controls
 
     // Labels
-    xl::StdStatic m_labelScoreInst;
-    xl::StdStatic m_labelScore;
+    xl::Windows::StdStatic m_labelScoreInst;
+    xl::Windows::StdStatic m_labelScore;
     
     // Buttons
-    xl::StdButton m_buttonPause;
-    xl::StdButton m_buttonStart;
-    xl::StdButton m_buttonChangeImage;
+    xl::Windows::StdButton m_buttonPause;
+    xl::Windows::StdButton m_buttonStart;
+    xl::Windows::StdButton m_buttonChangeImage;
 
     // ComboBox
-    xl::StdComboBox m_comboRenderer;
+    xl::Windows::StdComboBox m_comboRenderer;
 
     // Links
-    xl::StdLink m_linkWebSite;
+    xl::Windows::StdLink m_linkWebSite;
 
 private:
     HFONT m_hScoreFont;

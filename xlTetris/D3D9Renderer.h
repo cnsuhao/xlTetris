@@ -16,7 +16,7 @@
 #define __D3D9RENDERER_H_0A2D3A08_EA39_4B3B_90D8_9E15CC145A07_INCLUDED__
 
 
-#include <xl/Win32/Memory/xlSafeSmartPtr.h>
+#include <xl/Windows/Memory/xlSafeSmartPtr.h>
 #include "Renderer.h"
 #include <d3d9.h>
 #include <d3dx9core.h>

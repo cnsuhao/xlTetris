@@ -17,8 +17,8 @@
 #include "Game.h"
 #include <time.h>
 #include <tchar.h>
-#include <xl/String/xlString.h>
-#include <xl/Meta/xlBind.h>
+#include <xl/Common/String/xlString.h>
+#include <xl/Common/Meta/xlBind.h>
 #include "Language.h"
 
 Game::Game() :

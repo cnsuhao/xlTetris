@@ -17,7 +17,7 @@
 #define __GAME_H_3B2655D1_4D60_473A_A5DE_228943FD605B_INCLUDED__
 
 
-#include <xl/Meta/xlFunction.h>
+#include <xl/Common/Meta/xlFunction.h>
 #include <Windows.h>
 #include "Shape.h"
 #include "Renderer.h"

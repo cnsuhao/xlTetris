@@ -17,12 +17,12 @@
 #define __XMLPARSER_H_81AA27B5_A5C3_472C_9013_298686A3DC99_INCLUDED__
 
 
-#include <xl/Containers/xlArray.h>
-#include <xl/Containers/xlList.h>
-#include <xl/Containers/xlPair.h>
-#include <xl/Containers/xlMap.h>
-#include <xl/String/xlString.h>
-#include <xl/Memory/xlSmartPtr.h>
+#include <xl/Common/Containers/xlArray.h>
+#include <xl/Common/Containers/xlList.h>
+#include <xl/Common/Containers/xlPair.h>
+#include <xl/Common/Containers/xlMap.h>
+#include <xl/Common/String/xlString.h>
+#include <xl/Common/Memory/xlSmartPtr.h>
 
 typedef xl::Char XmlChar;
 typedef xl::String XmlString;
