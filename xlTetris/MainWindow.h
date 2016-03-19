@@ -91,8 +91,8 @@ private:
 
 private:
     // Notify Message Handlers
-    // LRESULT OnNotifyMessage(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hControl, BOOL &bHandled);
-    LRESULT OnLinkWebsiteClick(HWND hWnd, UINT_PTR uID, UINT uCode, HWND hControl, BOOL &bHandled);
+    // LRESULT OnNotifyMessage(HWND hWnd, LPNMHDR lpNMHDR, BOOL &bHandled);
+    LRESULT OnLinkWebsiteClick(HWND hWnd, LPNMHDR lpNMHDR, BOOL &bHandled);
 
 private:
     void Start();
