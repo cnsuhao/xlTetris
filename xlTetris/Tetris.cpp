@@ -52,8 +52,8 @@ bool Tetris::Initialize()
         return false;
     }
 
-    const int nWidth = MW_WIDTH + GetSystemMetrics(SM_CXBORDER);
-    const int nHeight = MW_HEIGHT + GetSystemMetrics(SM_CYBORDER) + GetSystemMetrics(SM_CYCAPTION);
+    const int nWidth = MW_WIDTH + GetSystemMetrics(SM_CXFRAME) * 2;
+    const int nHeight = MW_HEIGHT + GetSystemMetrics(SM_CYFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
     const int nX = (GetSystemMetrics(SM_CXSCREEN) - nWidth) / 2;
     const int nY = (GetSystemMetrics(SM_CYSCREEN) - nHeight) / 2;
 

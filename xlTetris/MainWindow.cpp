@@ -30,8 +30,8 @@
 
 Renderer *g_pRenderers[] =
 {
-    new D3D9Renderer,
     new GDIRenderer,
+    new D3D9Renderer,
     new D2D11Renderer,
     new D2D10Renderer,
 };
