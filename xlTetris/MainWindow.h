@@ -22,13 +22,14 @@
 #include <xl/Windows/GUI/xlStdStatic.h>
 #include <xl/Windows/GUI/xlStdComboBox.h>
 #include <xl/Windows/GUI/xlStdLink.h>
+#include <xl/Windows/GUI/xlDPI.h>
 #include <xl/Common/String/xlString.h>
 #include "Renderer.h"
 
-const int  MW_WIDTH         = 400;
-const int  MW_HEIGHT        = 480;
-const int  MW_GAME_WIDTH    = 240;
-const int  MW_PREVIEW_WIDTH = 120;
+const int  MW_WIDTH         = XL_DPI_X(400);
+const int  MW_HEIGHT        = XL_DPI_Y(480);
+const int  MW_GAME_WIDTH    = XL_DPI_X(240);
+const int  MW_PREVIEW_WIDTH = XL_DPI_Y(120);
 const RECT MW_INST_RECT     = { MW_GAME_WIDTH, 0, MW_WIDTH, MW_HEIGHT };
 const RECT MW_GAME_RECT     = { 0, 0, MW_GAME_WIDTH, MW_HEIGHT };
 const int  MW_MARGIN        = (MW_WIDTH - MW_GAME_WIDTH - MW_PREVIEW_WIDTH) / 2;

@@ -18,11 +18,12 @@
 
 
 #include <xl/Common/Meta/xlFunction.h>
+#include <xl/Windows/GUI/xlDPI.h>
 #include <Windows.h>
 #include "Shape.h"
 #include "Renderer.h"
 
-const int TETRIS_SIZE  = 24;
+const int TETRIS_SIZE  = XL_DPI_Y(24);
 const int TETRIS_MAX_X = 10;
 const int TETRIS_MAX_Y = 20;
 

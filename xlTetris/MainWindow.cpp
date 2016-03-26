@@ -89,25 +89,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::CreateControls()
 {
-    m_labelScoreInst.Create(m_hWnd, ID_STATIC, MW_GAME_WIDTH + MW_MARGIN, MW_MARGIN * 2 + MW_PREVIEW_WIDTH, 120, 16);
-    m_labelScore    .Create(m_hWnd, ID_STATIC, MW_GAME_WIDTH + MW_MARGIN, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 20, 120, 36, WS_CHILD | WS_VISIBLE | SS_CENTER);
+    m_labelScoreInst.Create(m_hWnd, ID_STATIC, MW_GAME_WIDTH + MW_MARGIN, MW_MARGIN * 2 + MW_PREVIEW_WIDTH, XL_DPI_X(120), XL_DPI_Y(16));
+    m_labelScore    .Create(m_hWnd, ID_STATIC, MW_GAME_WIDTH + MW_MARGIN, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + XL_DPI_X(20), XL_DPI_X(120), XL_DPI_Y(36), WS_CHILD | WS_VISIBLE | SS_CENTER);
 
     HFONT hFont = m_labelScore.GetFont();
     LOGFONT lf = {};
     GetObject(hFont, sizeof(lf), &lf);
-    lf.lfHeight  = 32;
+    lf.lfHeight  = XL_DPI_Y(32);
     lf.lfWeight  = FW_BOLD;
     m_hScoreFont = CreateFontIndirect(&lf);
 
     m_labelScore.SetFont(m_hScoreFont);
 
-    m_buttonPause.Create(m_hWnd, ID_BUTTON_PAUSE, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 64, 80, 24);
-    m_buttonStart.Create(m_hWnd, ID_BUTTON_START, MW_GAME_WIDTH + MW_MARGIN + 20, MW_MARGIN * 2 + MW_PREVIEW_WIDTH + 100, 80, 24);
+    m_buttonPause.Create(m_hWnd, ID_BUTTON_PAUSE, MW_GAME_WIDTH + MW_MARGIN + XL_DPI_X(20), MW_MARGIN * 2 + MW_PREVIEW_WIDTH + XL_DPI_Y(64),  XL_DPI_X(80), XL_DPI_Y(24));
+    m_buttonStart.Create(m_hWnd, ID_BUTTON_START, MW_GAME_WIDTH + MW_MARGIN + XL_DPI_X(20), MW_MARGIN * 2 + MW_PREVIEW_WIDTH + XL_DPI_Y(100), XL_DPI_X(80), XL_DPI_Y(24));
 
     m_buttonPause.EnableWindow(FALSE);
 
-    m_buttonChangeImage.Create(m_hWnd, ID_BUTTON_CHANGEIMAGE, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 88, 80, 24);
-    m_comboRenderer    .Create(m_hWnd, ID_COMBOBOX_RENDERER, MW_GAME_WIDTH + MW_MARGIN + 20, MW_HEIGHT - 60, 80, 24);
+    m_buttonChangeImage.Create(m_hWnd, ID_BUTTON_CHANGEIMAGE, MW_GAME_WIDTH + MW_MARGIN + XL_DPI_X(20), MW_HEIGHT - XL_DPI_Y(88), XL_DPI_X(80), XL_DPI_Y(24));
+    m_comboRenderer    .Create(m_hWnd, ID_COMBOBOX_RENDERER,  MW_GAME_WIDTH + MW_MARGIN + XL_DPI_X(20), MW_HEIGHT - XL_DPI_Y(60), XL_DPI_X(80), XL_DPI_Y(24));
 
     for (int i = 0; i < _countof(g_pRenderers); ++i)
     {
@@ -116,7 +116,7 @@ void MainWindow::CreateControls()
 
     m_comboRenderer.SetCurSel(-1);
 
-    m_linkWebSite.Create(m_hWnd, ID_LINK_WEBSITE, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - 24, 120, 24);
+    m_linkWebSite.Create(m_hWnd, ID_LINK_WEBSITE, MW_GAME_WIDTH + MW_MARGIN, MW_HEIGHT - XL_DPI_Y(24), XL_DPI_X(120), XL_DPI_Y(24));
 
     m_hBackground = (HBITMAP)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_BACKGROUND), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
     RenderUtility::FixAlpha(m_hBackground);

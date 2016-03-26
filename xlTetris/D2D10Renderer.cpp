@@ -150,6 +150,14 @@ void D2D10RenderContext::BeginDraw()
     RECT rc = {};
     GetClientRect(m_hWnd, &rc);
 
+    float fDpiX = 0.0f, fDpiY = 0.0f;
+    m_pRenderer->m_pD2DFactory->GetDesktopDpi(&fDpiX, &fDpiY);
+
+    rc.left = rc.left * fDpiX / 96.0f;
+    rc.top = rc.top * fDpiY / 96.0f;
+    rc.right = rc.right * fDpiX / 96.0f;
+    rc.bottom = rc.bottom * fDpiY / 96.0f;
+
     if (m_szLast.cx != rc.right - rc.left || m_szLast.cy != rc.bottom - rc.top)
     {
         m_szLast.cx = rc.right - rc.left;
