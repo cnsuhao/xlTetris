@@ -18,12 +18,14 @@
 #include <tchar.h>
 #include "Language.h"
 #include "Tetris.h"
+#include <xl/AppHelper/xlCrashDumper.h>
 
 int WINAPI _tWinMain(__in HINSTANCE hInstance,
                      __in_opt HINSTANCE hPrevInstance,
                      __in LPTSTR lpCmdLine,
                      __in int nShowCmd)
 {
+    xl::AppHelper::CrashDumper::Initialize();
     ::CoInitialize(NULL);
 
     if (!_Tetris.Initialize())
